@@ -1,0 +1,55 @@
+.main {
+    display: grid;
+    gap: var(--ds-size-10);
+    padding: var(--ds-size-8);
+    background: var(--ds-color-neutral-background-default);
+}
+
+.intro {
+    display: grid;
+    gap: var(--ds-size-4);
+}
+
+.section {
+    display: grid;
+    gap: var(--ds-size-4);
+    padding: var(--ds-size-6);
+    border: var(--ds-border-width-default) solid var(--ds-color-neutral-border-subtle);
+    border-radius: var(--ds-border-radius-lg);
+    background: var(--ds-color-neutral-surface-tinted);
+    box-shadow: var(--ds-shadow-xs);
+}
+
+.grid {
+    display: grid;
+    gap: var(--ds-size-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.listItem {
+    display: block;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-size-3);
+    align-items: center;
+}
+
+.stack {
+    display: grid;
+    gap: var(--ds-size-3);
+}
+
+.emptyState {
+    display: grid;
+    gap: var(--ds-size-3);
+    padding: var(--ds-size-6);
+    border-radius: var(--ds-border-radius-lg);
+    background: var(--ds-color-neutral-surface-default);
+    border: var(--ds-border-width-default) solid var(--ds-color-neutral-border-subtle);
+}
