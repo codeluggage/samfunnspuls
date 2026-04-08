@@ -13,7 +13,8 @@
     "check:a11y": "node scripts/check-a11y.mjs",
     "check:agent-context": "node scripts/check-agent-context.mjs",
     "check:ai": "npm run typecheck && npm run lint && npm run build && npm run check:designsystem && npm run check:a11y && npm run check:agent-context",
-    "guide:refresh": "node scripts/refresh-rk-context.mjs"
+    "guide:refresh": "node scripts/refresh-rk-context.mjs",
+    "eval:practice:setup": "node scripts/setup-practice-evals.mjs"
   },
   "dependencies": {
     "@digdir/designsystemet-css": "^1.12.1",

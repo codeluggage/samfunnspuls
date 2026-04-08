@@ -54,6 +54,25 @@ npm run check:ai
 npm run guide:refresh
 ```
 
+### Targeted verification
+
+The local checks accept explicit paths when you want to review one route, component, or practice case without running the whole app:
+
+```bash
+npm run check:designsystem -- src/app
+npm run check:a11y -- src/app
+```
+
+### Practice eval workspace
+
+Create persistent local copies of the template for the design-system review drills under `../.agent-evals/design-system-review`:
+
+```bash
+npm run eval:practice:setup -- --force=true 01-campaign-cta 02-search-results-page 03-support-form-section 04-breadcrumb-content-page
+```
+
+Each generated copy is a standalone local git repo with the broken scenario installed as `src/app/page.tsx`, so you can run Codex CLI, Claude Code, or the local verification scripts against a normal template-shaped workspace.
+
 ### Refreshing upstream context
 
 Refresh the local guide, metadata, and upstream manifest from published artifacts:
