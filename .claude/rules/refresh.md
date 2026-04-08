@@ -1,0 +1,9 @@
+<!-- GENERATED FROM .agents/rules/refresh.md. DO NOT EDIT DIRECTLY. -->
+
+# Refresh Rules
+
+- Use `refresh-rk-context` when updating local context from the upstream DesignSystem repo or published Storybook outputs.
+- Safe refreshes can update checked-in context artifacts and generated tool-specific files.
+- Stop for review when drift suggests a policy change, standards conflict, or existing code may no longer meet the current guidance.
+- Do not silently fold follow-up cleanup into the same refresh unless the engineer explicitly chooses that scope.
+- Prefer producing a drift report and issue-ready recommendations over making unrelated code changes.

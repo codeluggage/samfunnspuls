@@ -1,0 +1,24 @@
+.main {
+  width: min(100%, 54rem);
+  margin: 0 auto;
+  padding: var(--ds-size-8);
+  display: grid;
+  gap: var(--ds-size-6);
+}
+
+.hero {
+  display: grid;
+  gap: var(--ds-size-3);
+}
+
+.stack {
+  display: grid;
+  gap: var(--ds-size-3);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-size-3);
+  align-items: center;
+}

@@ -1,0 +1,13 @@
+---
+description: Refresh upstream DesignSystem context carefully and stop on policy drift.
+globs: AI_DESIGN_SYSTEM_GUIDE.md,metadata.json,.agents/**/*,scripts/**/*.{js,mjs},README.md
+alwaysApply: true
+---
+
+# Refresh Rules
+
+- Use `refresh-rk-context` when updating local context from the upstream DesignSystem repo or published Storybook outputs.
+- Safe refreshes can update checked-in context artifacts and generated tool-specific files.
+- Stop for review when drift suggests a policy change, standards conflict, or existing code may no longer meet the current guidance.
+- Do not silently fold follow-up cleanup into the same refresh unless the engineer explicitly chooses that scope.
+- Prefer producing a drift report and issue-ready recommendations over making unrelated code changes.

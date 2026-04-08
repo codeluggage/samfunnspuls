@@ -1,0 +1,13 @@
+---
+description: Verify template changes with local checks and browser-based proof for meaningful UI work.
+globs: src/**/*.{ts,tsx,css},scripts/**/*.{js,mjs}
+alwaysApply: true
+---
+
+# Verification Rules
+
+- Run `npm run check:ai` before calling a UI change complete.
+- For non-trivial UI work, use the `designsystem-proof` skill to capture before or after evidence and note the checks performed.
+- Prefer Chrome DevTools MCP for browser verification.
+- Treat static checks as a floor. When behavior changes, verify the rendered result as well as source conformance.
+- Keep refresh and standards cleanup separate: context refresh can surface drift, but broader app or component cleanup should be reviewed explicitly.
