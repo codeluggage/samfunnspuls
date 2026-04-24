@@ -11,8 +11,8 @@ const sourceSans3 = Source_Sans_3({
 });
 
 export const metadata: Metadata = {
-  title: "Røde Kors Designsystemet",
-  description: "Next.js template with Røde Kors Design System",
+  title: "Samfunnspuls aktivitetsradar",
+  description: "Lokal aktivitetsplanlegging med SSB-data og Røde Kors-aktiviteter",
 };
 
 export default function RootLayout({

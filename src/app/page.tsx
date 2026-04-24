@@ -1,55 +1,397 @@
 "use client";
 
-import { Button, Card, CardBlock, Heading, Paragraph } from "rk-designsystem";
+import {
+  Alert,
+  Badge,
+  Button,
+  Card,
+  CardBlock,
+  Header,
+  Heading,
+  Link,
+  Paragraph,
+  Select,
+  SkeletonLoader,
+  Table,
+  Tag,
+} from "rk-designsystem";
+import { type ChangeEvent, useEffect, useMemo, useState } from "react";
 import styles from "./page.module.css";
 
+type PlanningSignalLevel =
+  | "high-covered"
+  | "high-limited"
+  | "moderate-covered"
+  | "moderate-limited"
+  | "lower";
+
+type AreaPlan = {
+  regionCode: string;
+  municipality: string;
+  county: string | null;
+  year: string;
+  childrenCount: number | null;
+  lowIncomePercent: number | null;
+  activeBranchesCount: number;
+  matchingBranchesCount: number;
+  topRelevantActivities: Array<{ activityName: string; branchesCount: number }>;
+  branches: Array<{
+    branchId: string;
+    branchName: string;
+    county: string | null;
+    municipality: string | null;
+    relevantActivities: string[];
+    allActivitiesCount: number;
+    email?: string | null;
+    phone?: string | null;
+    web?: string | null;
+  }>;
+  planningSignal: {
+    level: PlanningSignalLevel;
+    title: string;
+    summary: string;
+  };
+  source: {
+    ssbTable: "08764";
+    ssbUpdatedAt: string | null;
+    importedAt: string;
+  };
+};
+
+type ApiResponse = {
+  areas: AreaPlan[];
+  metadata: {
+    generatedAt: string;
+    sources: Array<{
+      id: string;
+      label: string;
+      url: string;
+      source_updated_at: string | null;
+      imported_at: string;
+    }>;
+  };
+};
+
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <section className={styles.hero}>
-        <Heading level={1} data-size="xl">
-          Røde Kors Designsystemet
-        </Heading>
-        <Paragraph data-size="lg">
-          Start new Red Cross web apps with the design system, checked-in AI context,
-          and local verification defaults already in place.
-        </Paragraph>
-      </section>
+  const [areas, setAreas] = useState<AreaPlan[]>([]);
+  const [metadata, setMetadata] = useState<ApiResponse["metadata"] | null>(null);
+  const [selectedRegionCode, setSelectedRegionCode] = useState("");
+  const [status, setStatus] = useState<"loading" | "ready" | "empty" | "error">("loading");
+  const [error, setError] = useState("");
 
-      <Card data-color="neutral">
-        <CardBlock>
-          <Heading level={2} data-size="md">
-            Template ready
-          </Heading>
-          <Paragraph>
-            This Next.js project is pre-configured with the Røde Kors Design
-            System, design tokens, and React Compiler.
-          </Paragraph>
-          <div className={styles.actions}>
-            <Button variant="primary" data-size="md">
-              Get started
-            </Button>
-          </div>
-        </CardBlock>
-      </Card>
+  useEffect(() => {
+    let isActive = true;
 
-      <Card data-color="neutral">
-        <CardBlock>
-          <Heading level={2} data-size="md">
-            Built for guided collaboration
-          </Heading>
-          <div className={styles.stack}>
-            <Paragraph>
-              Shared skills and rules live in the repo, while tool-specific outputs
-              are generated with sync guards that stop on divergence.
-            </Paragraph>
-            <Paragraph>
-              Refresh upstream guidance with `npm run guide:refresh` and verify changes
-              with `npm run check:ai`.
-            </Paragraph>
-          </div>
-        </CardBlock>
-      </Card>
-    </main>
+    async function loadAreas() {
+      try {
+        const response = await fetch("/api/planning/areas");
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload.detail ?? payload.error ?? "Ukjent API-feil");
+        }
+
+        if (!isActive) return;
+
+        const data = payload as ApiResponse;
+        setAreas(data.areas);
+        setMetadata(data.metadata);
+        setSelectedRegionCode(data.areas[0]?.regionCode ?? "");
+        setStatus(data.areas.length ? "ready" : "empty");
+      } catch (caught) {
+        if (!isActive) return;
+        setError(caught instanceof Error ? caught.message : "Ukjent feil");
+        setStatus("error");
+      }
+    }
+
+    loadAreas();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  const selectedArea = useMemo(
+    () => areas.find((area) => area.regionCode === selectedRegionCode) ?? areas[0],
+    [areas, selectedRegionCode],
   );
+  const topAreas = areas.slice(0, 6);
+
+  return (
+    <>
+      <Header
+        data-color="primary"
+        activePage="Aktivitetsradar"
+        navItems={[{ label: "Aktivitetsradar", href: "/" }]}
+        showHeaderExtension
+        showNavItems
+        showMenuButton={false}
+        showSearch={false}
+        showLogin={false}
+        showUser={false}
+        showThemeToggle={false}
+      />
+
+      <main className={styles.main}>
+        <section className={styles.hero}>
+          <div className={styles.heroText}>
+            <Badge data-color="info">Samfunnspuls case</Badge>
+            <Heading level={1} data-size="xl">
+              Aktivitetsradar for lokale humanitære behov
+            </Heading>
+            <Paragraph data-size="lg">
+              Sammenlign barn og unge i lavinntekt med eksisterende Røde Kors-aktiviteter i kommunen.
+            </Paragraph>
+          </div>
+          {metadata ? <SourcePanel metadata={metadata} /> : null}
+        </section>
+
+        {status === "loading" ? <LoadingState /> : null}
+        {status === "error" ? <ErrorState message={error} /> : null}
+        {status === "empty" ? <EmptyState /> : null}
+        {status === "ready" && selectedArea ? (
+          <section className={styles.dashboard} aria-label="Lokal planleggingsoversikt">
+            <Card data-color="neutral">
+              <CardBlock>
+                <div className={styles.filterBar}>
+                  <div>
+                    <Heading level={2} data-size="md">
+                      Velg kommune
+                    </Heading>
+                    <Paragraph>
+                      {areas.length} kommuner med både SSB-indikator og minst én lokal Røde Kors-forening.
+                    </Paragraph>
+                  </div>
+                  <Select
+                    id="municipality"
+                    name="municipality"
+                    data-size="md"
+                    aria-label="Velg kommune"
+                    value={selectedRegionCode}
+                    onChange={(event: ChangeEvent<HTMLSelectElement>) => setSelectedRegionCode(event.target.value)}
+                  >
+                    {areas.map((area) => (
+                      <option key={area.regionCode} value={area.regionCode}>
+                        {area.municipality}
+                        {area.county ? `, ${area.county}` : ""}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+              </CardBlock>
+            </Card>
+
+            <section className={styles.summaryGrid} aria-label={`Nøkkeltall for ${selectedArea.municipality}`}>
+              <MetricCard
+                label="Barn i lavinntekt"
+                value={formatPercent(selectedArea.lowIncomePercent)}
+                detail={`SSB ${selectedArea.year}, EU-skala 60 prosent`}
+              />
+              <MetricCard
+                label="Barn under 18 år"
+                value={formatNumber(selectedArea.childrenCount)}
+                detail="Privathusholdninger i valgt kommune"
+              />
+              <MetricCard
+                label="Aktive lokalforeninger"
+                value={String(selectedArea.activeBranchesCount)}
+                detail="Fra Røde Kors organisasjonsdata"
+              />
+              <MetricCard
+                label="Relevante aktivitetstreff"
+                value={String(selectedArea.matchingBranchesCount)}
+                detail="Barn, ungdom, møteplasser og integrering"
+              />
+            </section>
+
+            <div className={styles.twoColumn}>
+              <Card data-color="neutral">
+                <CardBlock>
+                  <div className={styles.cardStack}>
+                    <Tag data-color={signalColor(selectedArea.planningSignal.level)}>
+                      {selectedArea.planningSignal.title}
+                    </Tag>
+                    <Heading level={2} data-size="lg">
+                      {selectedArea.municipality}
+                      {selectedArea.county ? `, ${selectedArea.county}` : ""}
+                    </Heading>
+                    <Paragraph>{selectedArea.planningSignal.summary}</Paragraph>
+                    <div className={styles.tagList} aria-label="Relevante aktiviteter">
+                      {selectedArea.topRelevantActivities.length ? (
+                        selectedArea.topRelevantActivities.map((activity) => (
+                          <Badge key={activity.activityName} data-color="neutral">
+                            {activity.activityName}: {activity.branchesCount}
+                          </Badge>
+                        ))
+                      ) : (
+                        <Paragraph>Ingen relevante aktivitetstreff i de valgte kategoriene.</Paragraph>
+                      )}
+                    </div>
+                  </div>
+                </CardBlock>
+              </Card>
+
+              <Card data-color="neutral">
+                <CardBlock>
+                  <div className={styles.cardStack}>
+                    <Heading level={2} data-size="md">
+                      Kommuner med høyest utslag
+                    </Heading>
+                    <div className={styles.rankList}>
+                      {topAreas.map((area) => (
+                        <Button
+                          key={area.regionCode}
+                          variant={area.regionCode === selectedArea.regionCode ? "primary" : "secondary"}
+                          data-size="sm"
+                          onClick={() => setSelectedRegionCode(area.regionCode)}
+                        >
+                          {area.municipality} {formatPercent(area.lowIncomePercent)}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </CardBlock>
+              </Card>
+            </div>
+
+            <Card data-color="neutral">
+              <CardBlock>
+                <div className={styles.cardStack}>
+                  <Heading level={2} data-size="md">
+                    Lokale foreninger og aktivitetstreff
+                  </Heading>
+                  <div className={styles.tableWrap}>
+                    <Table data-size="sm" zebra hover>
+                      <thead>
+                        <tr>
+                          <th>Forening</th>
+                          <th>Relevante aktiviteter</th>
+                          <th>Kontakt</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedArea.branches.map((branch) => (
+                          <tr key={branch.branchId}>
+                            <td>{branch.branchName}</td>
+                            <td>
+                              {branch.relevantActivities.length
+                                ? branch.relevantActivities.join(", ")
+                                : "Ingen treff i valgte kategorier"}
+                            </td>
+                            <td>
+                              {branch.web ? (
+                                <Link href={branch.web}>Nettside</Link>
+                              ) : branch.email ? (
+                                <Link href={`mailto:${branch.email}`}>E-post</Link>
+                              ) : (
+                                "Ikke oppgitt"
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </div>
+                </div>
+              </CardBlock>
+            </Card>
+          </section>
+        ) : null}
+      </main>
+    </>
+  );
+}
+
+function MetricCard({ label, value, detail }: { label: string; value: string; detail: string }) {
+  return (
+    <Card data-color="neutral">
+      <CardBlock>
+        <div className={styles.metric}>
+          <span>{label}</span>
+          <strong>{value}</strong>
+          <Paragraph data-size="sm">{detail}</Paragraph>
+        </div>
+      </CardBlock>
+    </Card>
+  );
+}
+
+function SourcePanel({ metadata }: { metadata: ApiResponse["metadata"] }) {
+  const ssbSource = metadata.sources.find((source) => source.id === "ssb-08764");
+  const orgSource = metadata.sources.find((source) => source.id === "red-cross-organizations");
+
+  return (
+    <Card data-color="neutral">
+      <CardBlock>
+        <div className={styles.sourcePanel}>
+          <Heading level={2} data-size="sm">
+            Datagrunnlag
+          </Heading>
+          <Paragraph data-size="sm">SSB tabell 08764 oppdatert {formatDate(ssbSource?.source_updated_at)}.</Paragraph>
+          <Paragraph data-size="sm">
+            Organisasjonsdata fra Røde Kors API-uttak {formatDate(orgSource?.source_updated_at)}.
+          </Paragraph>
+          <Paragraph data-size="sm">Sist synkronisert {formatDate(ssbSource?.imported_at)}.</Paragraph>
+        </div>
+      </CardBlock>
+    </Card>
+  );
+}
+
+function LoadingState() {
+  return (
+    <section className={styles.summaryGrid} aria-label="Laster planleggingsdata">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <Card key={index} data-color="neutral">
+          <CardBlock>
+            <SkeletonLoader aria-label="Laster" />
+          </CardBlock>
+        </Card>
+      ))}
+    </section>
+  );
+}
+
+function ErrorState({ message }: { message: string }) {
+  return (
+    <Alert data-color="danger">
+      <Heading level={2} data-size="sm">
+        Data kunne ikke hentes
+      </Heading>
+      <Paragraph>{message}</Paragraph>
+    </Alert>
+  );
+}
+
+function EmptyState() {
+  return (
+    <Alert data-color="warning">
+      <Heading level={2} data-size="sm">
+        Ingen planleggingsdata
+      </Heading>
+      <Paragraph>Kjør lokal Supabase og importer data før dashboardet åpnes.</Paragraph>
+    </Alert>
+  );
+}
+
+function formatPercent(value: number | null) {
+  return value === null ? "Ikke oppgitt" : `${value.toLocaleString("nb-NO", { maximumFractionDigits: 1 })} %`;
+}
+
+function formatNumber(value: number | null) {
+  return value === null ? "Ikke oppgitt" : value.toLocaleString("nb-NO");
+}
+
+function formatDate(value: string | null | undefined) {
+  if (!value) return "ikke oppgitt";
+  return new Intl.DateTimeFormat("nb-NO", { dateStyle: "medium" }).format(new Date(value));
+}
+
+function signalColor(level: PlanningSignalLevel) {
+  if (level === "high-covered") return "success";
+  if (level === "high-limited") return "warning";
+  if (level === "moderate-covered") return "info";
+  if (level === "moderate-limited") return "warning";
+  return "neutral";
 }

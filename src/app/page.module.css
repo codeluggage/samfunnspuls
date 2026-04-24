@@ -1,5 +1,5 @@
 .main {
-  width: min(100%, 54rem);
+  width: min(100%, 76rem);
   margin: 0 auto;
   padding: var(--ds-size-8);
   display: grid;
@@ -7,6 +7,15 @@
 }
 
 .hero {
+  display: flex;
+  gap: var(--ds-size-3);
+  align-items: end;
+  justify-content: space-between;
+  padding-block: var(--ds-size-6) var(--ds-size-3);
+}
+
+.heroText {
+  max-width: 46rem;
   display: grid;
   gap: var(--ds-size-3);
 }
@@ -21,4 +30,89 @@
   flex-wrap: wrap;
   gap: var(--ds-size-3);
   align-items: center;
+}
+
+.dashboard {
+  display: grid;
+  gap: var(--ds-size-5);
+}
+
+.filterBar {
+  display: grid;
+  grid-template-columns: 1fr minmax(16rem, 24rem);
+  gap: var(--ds-size-4);
+  align-items: end;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--ds-size-4);
+}
+
+.metric {
+  display: grid;
+  gap: var(--ds-size-2);
+}
+
+.metric span {
+  color: var(--ds-color-neutral-text-subtle);
+  font-weight: 600;
+}
+
+.metric strong {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.twoColumn {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 0.75fr);
+  gap: var(--ds-size-4);
+  align-items: start;
+}
+
+.cardStack,
+.sourcePanel {
+  display: grid;
+  gap: var(--ds-size-3);
+}
+
+.tagList,
+.rankList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-size-2);
+}
+
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 56.25rem) {
+  .main {
+    padding: var(--ds-size-5);
+  }
+
+  .hero,
+  .filterBar,
+  .twoColumn {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 35rem) {
+  .main {
+    padding: var(--ds-size-4);
+  }
+
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
 }
