@@ -14,4 +14,5 @@ alwaysApply: true
 - Use `--ds-size-*` tokens for spacing and layout. Do not use `--ds-spacing-*`.
 - Avoid hardcoded colors, shadows, and spacing values when an existing token covers the need.
 - Keep pages semantic: use one clear `<main>`, a top-level heading, and accessible names for interactive controls.
+- Give design-system form controls stable `id` and `name` props, in addition to an accessible name, so rendered fields pass browser accessibility inspection.
 - Treat the checked-in `AI_DESIGN_SYSTEM_GUIDE.md` and `metadata.json` as reference material that should support, not replace, code review and verification.

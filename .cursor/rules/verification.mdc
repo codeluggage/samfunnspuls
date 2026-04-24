@@ -11,5 +11,6 @@ alwaysApply: true
 - Run `npm run check:ai` before calling a UI change complete.
 - For non-trivial UI work, use the `designsystem-proof` skill to capture before or after evidence and note the checks performed.
 - Prefer Chrome DevTools MCP for browser verification.
+- If `next dev` emits repeated `EMFILE` or `Watchpack` watcher errors, try `WATCHPACK_POLLING=true` before changing application code. Verify the page against `next build` + `next start` if watcher limits obscure the result.
 - Treat static checks as a floor. When behavior changes, verify the rendered result as well as source conformance.
 - Keep refresh and standards cleanup separate: context refresh can surface drift, but broader app or component cleanup should be reviewed explicitly.

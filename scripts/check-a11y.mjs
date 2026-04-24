@@ -54,6 +54,20 @@ for (const filePath of tsxFiles) {
     }
   }
 
+  const formControls = collectJsxOpeningTags(content, [
+    "DateInput",
+    "Input",
+    "Search.Input",
+    "Select",
+    "Textarea",
+    "Textfield",
+  ]);
+  for (const { componentName, tag } of formControls) {
+    if (!/\bid=/.test(tag) || !/\bname=/.test(tag)) {
+      issues.push(`${relative}: ${componentName} should include id and name so rendered form fields are labelable and inspectable.`);
+    }
+  }
+
   const textareas = content.match(/<textarea\b[^>]*>/g) ?? [];
   for (const tag of textareas) {
     if (!/\b(?:aria-label|aria-labelledby)=/.test(tag) && !/<(?:Label|Field)\b/.test(content)) {
@@ -152,4 +166,21 @@ function findFirstHeadingIndex(content) {
     .filter((index) => index !== -1);
 
   return indexes.length > 0 ? Math.min(...indexes) : -1;
+}
+
+function collectJsxOpeningTags(content, componentNames) {
+  const escapedNames = componentNames
+    .map((componentName) => componentName.replace(".", "\\."))
+    .join("|");
+  const pattern = new RegExp(`<(${escapedNames})\\b[^>]*>`, "g");
+  const matches = [];
+
+  for (const match of content.matchAll(pattern)) {
+    matches.push({
+      componentName: match[1],
+      tag: match[0],
+    });
+  }
+
+  return matches;
 }
