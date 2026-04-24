@@ -1,6 +1,6 @@
-# Next.js Designsystemet Template
+# Samfunnspuls Case
 
-Next.js starter template pre-configured with the [Røde Kors Design System](https://norwegianredcross.github.io/DesignSystem/storybook/).
+Case app workspace derived from the Next.js starter template and pre-configured with the [Røde Kors Design System](https://norwegianredcross.github.io/DesignSystem/storybook/).
 
 ## What's included
 

@@ -99,8 +99,8 @@ async function main() {
 function analyzeGuide(guide) {
   const driftPatterns = [
     {
-      pattern: /--ds-spacing-/g,
-      message: "Guide still references --ds-spacing-* even though template rules require --ds-size-* tokens.",
+      pattern: /var\(--ds-spacing-/g,
+      message: "Guide still uses var(--ds-spacing-*) examples even though template rules require --ds-size-* tokens.",
     },
     {
       pattern: /var\(--spacing-/g,
@@ -122,9 +122,16 @@ function analyzeManifest(manifest) {
     return;
   }
 
-  if (manifest.guideDiagnostics?.some((diagnostic) => diagnostic.severity === "review")) {
+  if (Array.isArray(manifest.guideDiagnostics)) {
     for (const diagnostic of manifest.guideDiagnostics) {
-      report.decisionPoints.push(`Upstream guide diagnostic: ${diagnostic.message}`);
+      const message = `Upstream guide diagnostic: ${diagnostic.message}`;
+
+      if (diagnostic.severity === "error") {
+        report.decisionPoints.push(message);
+      } else {
+        report.followUpWork.push(message);
+      }
+
       report.issueCandidates.push(`Investigate upstream guide diagnostic: ${diagnostic.message}`);
     }
   }

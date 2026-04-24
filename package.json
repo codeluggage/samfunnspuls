@@ -1,5 +1,5 @@
 {
-  "name": "next-designsystemet-template",
+  "name": "samfunnspuls-case",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -17,15 +17,15 @@
     "eval:practice:setup": "node scripts/setup-practice-evals.mjs"
   },
   "dependencies": {
-    "@digdir/designsystemet-css": "^1.12.1",
-    "@digdir/designsystemet-react": "^1.12.1",
+    "@digdir/designsystemet-css": "^1.13.2",
+    "@digdir/designsystemet-react": "^1.13.2",
     "@navikt/aksel-icons": "^8.6.0",
     "date-fns": "^4.1.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "rk-design-tokens": "^1.0.46",
-    "rk-designsystem": "^1.1.124"
+    "rk-designsystem": "^1.1.129"
   },
   "devDependencies": {
     "@types/node": "^20",
