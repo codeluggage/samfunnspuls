@@ -11,7 +11,7 @@ The app combines one public humanitarian need indicator from SSB with supplied R
 - **Database:** local Supabase stores imported source metadata, branches, activities, and normalized need indicators.
 - **Backend:** `GET /api/planning/areas` joins the normalized tables and returns a planning-friendly shape.
 - **Frontend:** the Next.js App Router page consumes only the API route and renders a Røde Kors design-system dashboard with loading, empty, error, source metadata, mobile layout, and accessible controls.
-- **Deployment:** not deployed in this thread by request. The app is structured for Vercel deployment once Supabase/project environment variables are available.
+- **Deployment:** Vercel and Supabase.
 
 ## Data flow
 
@@ -24,7 +24,7 @@ SSB API table 08764
   -> dashboard page
 ```
 
-The importer deduplicates duplicate branch/activity keys from the source JSON before upserting. In the current local import it stores 391 unique branches, 2,375 activities, and 260 municipality need rows for 2024.
+The importer deduplicates duplicate branch/activity keys from the source JSON before upserting. In the `api-getOrganizations-output-21apr26.json` local import it stores 391 unique branches, 2,375 activities, and 260 municipality need rows for 2024.
 
 ## Setup
 
@@ -42,7 +42,7 @@ npm run build
 npm run start
 ```
 
-Open http://localhost:3000.
+Open http://localhost:3000 (or what your devcontainer has configured - typically exposed as port 3000)
 
 Useful checks:
 
