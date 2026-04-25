@@ -1,0 +1,166 @@
+.main {
+  width: min(100%, 76rem);
+  margin: 0 auto;
+  padding: var(--ds-size-8);
+  display: grid;
+  gap: var(--ds-size-5);
+}
+
+.hero {
+  display: flex;
+  gap: var(--ds-size-4);
+  align-items: end;
+  justify-content: space-between;
+  padding-block: var(--ds-size-6) var(--ds-size-3);
+}
+
+.heroText {
+  max-width: 48rem;
+  display: grid;
+  gap: var(--ds-size-3);
+}
+
+.heroStats {
+  min-width: 12rem;
+  display: grid;
+  gap: var(--ds-size-1);
+  justify-items: end;
+}
+
+.heroStats strong {
+  font-size: 2.75rem;
+  line-height: 1;
+}
+
+.heroStats span {
+  color: var(--ds-color-neutral-text-subtle);
+  font-weight: 600;
+}
+
+.searchPanel,
+.detailStack,
+.sectionStack,
+.emptyState {
+  display: grid;
+  gap: var(--ds-size-3);
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--ds-size-3);
+}
+
+.resultsHeader {
+  display: flex;
+  gap: var(--ds-size-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.resultsLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(22rem, 1.05fr);
+  gap: var(--ds-size-4);
+  align-items: start;
+}
+
+.resultList {
+  display: grid;
+  gap: var(--ds-size-3);
+}
+
+.resultCard {
+  display: grid;
+  gap: var(--ds-size-3);
+}
+
+.resultTitle {
+  display: grid;
+  gap: var(--ds-size-2);
+}
+
+.detailPanel {
+  position: sticky;
+  top: var(--ds-size-4);
+}
+
+.metaList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ds-size-3);
+  margin: 0;
+}
+
+.metaList div {
+  display: grid;
+  gap: var(--ds-size-1);
+}
+
+.metaList dt {
+  color: var(--ds-color-neutral-text-subtle);
+  font-weight: 700;
+}
+
+.metaList dd {
+  margin: 0;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-size-2);
+}
+
+.linkList {
+  margin: 0;
+  padding-inline-start: var(--ds-size-5);
+}
+
+.linkList li + li {
+  margin-top: var(--ds-size-2);
+}
+
+.definitionList {
+  display: grid;
+  gap: var(--ds-size-2);
+  margin-block-start: var(--ds-size-3);
+}
+
+@media (max-width: 60rem) {
+  .main {
+    padding: var(--ds-size-5);
+  }
+
+  .hero,
+  .resultsLayout {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .heroStats {
+    justify-items: start;
+  }
+
+  .detailPanel {
+    position: static;
+  }
+
+  .filters,
+  .metaList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 35rem) {
+  .main {
+    padding: var(--ds-size-4);
+  }
+
+  .filters,
+  .metaList,
+  .resultsHeader {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

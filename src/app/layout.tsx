@@ -11,8 +11,8 @@ const sourceSans3 = Source_Sans_3({
 });
 
 export const metadata: Metadata = {
-  title: "Samfunnspuls aktivitetsradar",
-  description: "Lokal aktivitetsplanlegging med SSB-data og Røde Kors-aktiviteter",
+  title: "Samfunnspuls datakatalog",
+  description: "Lokal aktivitetsplanlegging og utforsking av samfunnsdata for Røde Kors",
 };
 
 export default function RootLayout({

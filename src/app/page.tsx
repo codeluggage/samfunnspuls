@@ -123,7 +123,10 @@ export default function Home() {
       <Header
         data-color="primary"
         activePage="Aktivitetsradar"
-        navItems={[{ label: "Aktivitetsradar", href: "/" }]}
+        navItems={[
+          { label: "Aktivitetsradar", href: "/" },
+          { label: "Utforsk data", href: "/utforsk-data" },
+        ]}
         showHeaderExtension
         showNavItems
         showMenuButton={false}
