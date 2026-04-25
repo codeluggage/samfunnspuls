@@ -2,9 +2,9 @@
 
 ## Goal
 
-Build the next branch as a structured Samfunnspuls source catalog with a narrow search-first exploration surface. The catalog should make the original site's scattered statistic pages searchable by topic, geography, year, source, value type, IDs, related statistics, and explanatory text.
+Build the next branch as a structured Samfunnspuls source catalog with a narrow search-first exploration surface. The catalog should make public humanitarian statistics searchable by topic, geography, year, source, value type, IDs, related statistics, and explanatory text.
 
-The existing `Aktivitetsradar` remains intact as the real integrated planning slice. The new work adds the information backbone needed to rebuild more of the original site and later invert the UX more fully.
+The existing `Aktivitetsradar` remains intact as the real integrated planning slice. The new work adds the information backbone needed to rebuild more of Samfunnspuls and later invert the UX more fully.
 
 ## Product Direction
 
@@ -16,7 +16,7 @@ This branch should reverse the first step. A user should be able to land on a ne
 
 ### In Scope
 
-- Add a typed metadata catalog for the known Samfunnspuls public statistics pages found in:
+- Add a typed metadata catalog for the known Samfunnspuls public statistics currently identified from:
   - `/Users/mf/CLAUDE/career/red-cross/samfunnspuls-sitemap-from-gpt-5.md`
   - `/Users/mf/CLAUDE/career/red-cross/samfunnspuls-sitemap-from-claude.md`
 - Cover the known 37 statistic pages across the six categories:
@@ -26,24 +26,24 @@ This branch should reverse the first step. A user should be able to land on a ne
   - Flyktninger og asylsøkere
   - Frivillighet
   - Økonomi
-- Store known metadata per statistic:
-  - slug and original URL
+- Store known domain metadata per statistic:
+  - slug and rebuilt app path
   - title
   - category
   - summary text when known
   - source agency, such as SSB, NAV, Udir, IMDi, Røde Kors, or Brønnøysundregistrene
   - known Power BI report ID
   - known SSB table IDs
-  - related statistic links
+  - related statistic titles and rebuilt app paths where known
   - value type hints, such as count, percent, rate, kroner, or duration
   - geography hints, such as municipality, county, country, school level, or branch
   - time hints, such as year, month, school year, or snapshot date
   - API readiness status: `metadata-only`, `api-known`, or `integrated`
-  - inspection notes for missing report IDs, missing source tables, or uncollected explanatory text
 - Treat the explanatory "Om tallene" text as searchable catalog content. This includes fields like statistic name, source, data type, count date, collection method, definitions, and references.
 - Add a search-first page that lets users search and filter the catalog.
 - Keep the current activity radar route working.
 - Add focused tests for catalog integrity and search behavior.
+- Keep legacy/original-site references out of the core catalog model. If the UI needs a comparison link back to an original page, colocate that mapping with the presentation layer and do not feed it into search, filtering, or future data integrations.
 
 ### Out of Scope For This Branch
 
@@ -55,17 +55,17 @@ This branch should reverse the first step. A user should be able to land on a ne
 
 ## Content Model
 
-Create a catalog entry model that can represent both complete and partially inspected statistics.
+Create a catalog entry model that represents the rebuilt product's statistics, not the old site's implementation state.
 
 Required fields:
 
-- `slug`: stable local slug matching the original path segment.
-- `originalUrl`: full Samfunnspuls URL.
+- `slug`: stable local slug derived from the statistic topic and category.
+- `path`: rebuilt app path for this statistic or search result detail.
 - `title`: user-facing title.
 - `category`: one of the known statistic categories.
 - `source`: source agency label.
 - `status`: `metadata-only`, `api-known`, or `integrated`.
-- `searchText`: normalized searchable text generated from title, summary, tags, IDs, related statistics, and "Om tallene" fields.
+- `searchText`: normalized searchable text generated from title, summary, tags, IDs, related statistics, and "Om tallene" fields. Legacy reference URLs must not be included in this field.
 
 Optional fields:
 
@@ -77,7 +77,7 @@ Optional fields:
 - `valueTypes`: count, percent, kroner, duration, rate, or unknown.
 - `geographies`: municipality, county, Norway, school, branch, or unknown.
 - `timeDimensions`: year, month, school year, count date, or unknown.
-- `relatedStatistics`: title and URL pairs.
+- `relatedStatistics`: title and rebuilt app path pairs where the related statistic exists in the catalog; title-only entries where it does not.
 - `aboutNumbers`: structured explanatory metadata:
   - `statisticName`
   - `sourceDescription`
@@ -86,7 +86,7 @@ Optional fields:
   - `collectionMethod`
   - `definitions`
   - `references`
-- `inspectionNotes`: short notes about what still needs manual or browser inspection.
+The core model must not include implementation-process fields such as `inspectionNotes`, `originalUrl`, `legacyUrl`, or `needsInspection`. Missing data should be represented by absent optional fields and rendered in the UI as `Ikke kartlagt ennå` only where that helps the user understand a visible gap.
 
 ## Seed Examples
 
@@ -94,7 +94,7 @@ The first metadata set should include the two manually inspected examples from t
 
 ### Lavinntekt Barn Og Unge
 
-- Original URL: `https://samfunnspuls.rodekors.no/statistikker/barn-og-unge/lavinntekt/`
+- Rebuilt path: `/utforsk-data/barn-og-unge/lavinntekt`
 - Title: `Barn og unge i husholdninger med lavinntekt (EU-60)`
 - Category: `Barn og unge`
 - Source: `Statistisk sentralbyrå (SSB)`
@@ -110,7 +110,7 @@ The first metadata set should include the two manually inspected examples from t
 
 ### Befolkningsendring
 
-- Original URL: `https://samfunnspuls.rodekors.no/statistikker/demografi-og-boforhold/befolkningsendring-folketilvekst/`
+- Rebuilt path: `/utforsk-data/demografi-og-boforhold/befolkningsendring-folketilvekst`
 - Title: `Befolkningsendring`
 - Category: `Demografi og boforhold`
 - Source: `Statistisk sentralbyrå (SSB)`
@@ -147,11 +147,11 @@ Each result card should show:
 
 Selecting a result should show details in-page or on a detail route. The first implementation can use an in-page detail panel to avoid overbuilding routing. The detail should include:
 
-- Original page link.
 - Known source and API details.
 - "Om tallene" fields that have been captured.
-- Related statistics as links within the rebuilt app where entries exist, otherwise original URLs.
-- Inspection notes that clearly mark unknowns.
+- Related statistics as links within the rebuilt app where entries exist; otherwise render the related statistic title as plain text.
+- `Ikke kartlagt ennå` labels for missing report IDs, source tables, or explanatory fields where exposing the gap is useful to the user.
+- Optional comparison links to original Samfunnspuls pages only in the presentation layer. These links should not be part of the domain catalog entries or search index.
 
 ## Technical Approach
 
@@ -161,6 +161,8 @@ Use file-backed typed metadata for the first branch:
 - `src/lib/samfunnspuls/search.ts`: search normalization, scoring, filtering, and result shaping.
 - `src/app/utforsk-data/page.tsx`: client page for search and detail inspection.
 - `src/app/utforsk-data/page.module.css`: layout only, using design tokens.
+
+If original-page comparison links are shown, keep them in the `/utforsk-data` presentation module or a colocated UI-only helper, not in `src/lib/samfunnspuls/catalog.ts` or `src/lib/samfunnspuls/search.ts`.
 
 Do not add a database migration for catalog metadata in this branch. The metadata is still incomplete and partly research-derived, so keeping it file-backed makes review and iteration easier. The type shape should still be compatible with later Supabase storage.
 
