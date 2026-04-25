@@ -44,3 +44,4 @@ next-env.d.ts
 /.artifacts/
 
 docs/data
+/.agent-shell/
