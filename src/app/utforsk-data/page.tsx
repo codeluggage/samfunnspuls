@@ -1,14 +1,12 @@
 "use client";
 
 import {
-  Badge,
   Button,
   Card,
   CardBlock,
   Details,
-  Header,
+  Field,
   Heading,
-  Link,
   Paragraph,
   Select,
   Tag,
@@ -27,6 +25,7 @@ import {
   searchCatalog,
   type CatalogSearchResult,
 } from "@/lib/samfunnspuls/search";
+import { SiteHeader } from "../components/site-header";
 import styles from "./page.module.css";
 
 const filterOptions = getCatalogFilterOptions(SAMFUNNSPULS_CATALOG);
@@ -51,26 +50,12 @@ export default function UtforskDataPage() {
 
   return (
     <>
-      <Header
-        data-color="primary"
-        activePage="Utforsk data"
-        navItems={[
-          { label: "Aktivitetsradar", href: "/" },
-          { label: "Utforsk data", href: "/utforsk-data" },
-        ]}
-        showHeaderExtension
-        showNavItems
-        showMenuButton={false}
-        showSearch={false}
-        showLogin={false}
-        showUser={false}
-        showThemeToggle={false}
-      />
+      <SiteHeader />
 
       <main className={styles.main}>
         <section className={styles.hero}>
           <div className={styles.heroText}>
-            <Badge data-color="info">Datakatalog</Badge>
+            <Tag data-color="info">Datakatalog</Tag>
             <Heading level={1} data-size="xl">
               Utforsk samfunnsdata på tvers av kilder
             </Heading>
@@ -97,65 +82,73 @@ export default function UtforskDataPage() {
               />
 
               <div className={styles.filters}>
-                <Select
-                  id="catalog-category"
-                  name="catalog-category"
-                  aria-label="Filtrer på kategori"
-                  value={category}
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) => setCategory(event.target.value as CatalogCategory | "all")}
-                >
-                  <option value="all">Alle kategorier</option>
-                  {filterOptions.categories.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </Select>
+                <Field>
+                  <label htmlFor="catalog-category">Kategori</label>
+                  <Select
+                    id="catalog-category"
+                    name="catalog-category"
+                    value={category}
+                    onChange={(event: ChangeEvent<HTMLSelectElement>) => setCategory(event.target.value as CatalogCategory | "all")}
+                  >
+                    <option value="all">Alle kategorier</option>
+                    {filterOptions.categories.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
 
-                <Select
-                  id="catalog-source"
-                  name="catalog-source"
-                  aria-label="Filtrer på kilde"
-                  value={source}
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) => setSource(event.target.value)}
-                >
-                  <option value="all">Alle kilder</option>
-                  {filterOptions.sources.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </Select>
+                <Field>
+                  <label htmlFor="catalog-source">Kilde</label>
+                  <Select
+                    id="catalog-source"
+                    name="catalog-source"
+                    value={source}
+                    onChange={(event: ChangeEvent<HTMLSelectElement>) => setSource(event.target.value)}
+                  >
+                    <option value="all">Alle kilder</option>
+                    {filterOptions.sources.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
 
-                <Select
-                  id="catalog-value-type"
-                  name="catalog-value-type"
-                  aria-label="Filtrer på verdi"
-                  value={valueType}
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) => setValueType(event.target.value as ValueType | "all")}
-                >
-                  <option value="all">Alle verdityper</option>
-                  {filterOptions.valueTypes.map((option) => (
-                    <option key={option} value={option}>
-                      {valueTypeLabel(option)}
-                    </option>
-                  ))}
-                </Select>
+                <Field>
+                  <label htmlFor="catalog-value-type">Verditype</label>
+                  <Select
+                    id="catalog-value-type"
+                    name="catalog-value-type"
+                    value={valueType}
+                    onChange={(event: ChangeEvent<HTMLSelectElement>) => setValueType(event.target.value as ValueType | "all")}
+                  >
+                    <option value="all">Alle verdityper</option>
+                    {filterOptions.valueTypes.map((option) => (
+                      <option key={option} value={option}>
+                        {valueTypeLabel(option)}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
 
-                <Select
-                  id="catalog-status"
-                  name="catalog-status"
-                  aria-label="Filtrer på datastatus"
-                  value={status}
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) => setStatus(event.target.value as CatalogStatus | "all")}
-                >
-                  <option value="all">Alle statuser</option>
-                  {filterOptions.statuses.map((option) => (
-                    <option key={option} value={option}>
-                      {statusLabel(option)}
-                    </option>
-                  ))}
-                </Select>
+                <Field>
+                  <label htmlFor="catalog-status">Datastatus</label>
+                  <Select
+                    id="catalog-status"
+                    name="catalog-status"
+                    value={status}
+                    onChange={(event: ChangeEvent<HTMLSelectElement>) => setStatus(event.target.value as CatalogStatus | "all")}
+                  >
+                    <option value="all">Alle statuser</option>
+                    {filterOptions.statuses.map((option) => (
+                      <option key={option} value={option}>
+                        {statusLabel(option)}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
               </div>
             </section>
           </CardBlock>
@@ -192,7 +185,7 @@ export default function UtforskDataPage() {
                 />
               ))}
             </div>
-            {selectedResult ? <DetailPanel entry={selectedResult.entry} /> : null}
+            {selectedResult ? <DetailPanel entry={selectedResult.entry} onRelatedSelect={setSelectedSlug} /> : null}
           </section>
         ) : (
           <Card data-color="neutral">
@@ -234,12 +227,12 @@ function ResultCard({
           </div>
           <Paragraph data-size="sm">{entry.summary ?? "Ikke kartlagt ennå"}</Paragraph>
           <div className={styles.tagList} aria-label={`Metadata for ${entry.title}`}>
-            <Badge data-color="neutral">{entry.category}</Badge>
-            <Badge data-color="neutral">{entry.source}</Badge>
+            <Tag data-color="neutral">{entry.category}</Tag>
+            <Tag data-color="neutral">{entry.source}</Tag>
             {entry.ssbTables?.map((table) => (
-              <Badge key={table.id} data-color="info">
+              <Tag key={table.id} data-color="info">
                 SSB {table.id}
-              </Badge>
+              </Tag>
             ))}
           </div>
           <Button variant={isSelected ? "primary" : "secondary"} data-size="sm" onClick={onSelect}>
@@ -251,7 +244,7 @@ function ResultCard({
   );
 }
 
-function DetailPanel({ entry }: { entry: SamfunnspulsCatalogEntry }) {
+function DetailPanel({ entry, onRelatedSelect }: { entry: SamfunnspulsCatalogEntry; onRelatedSelect: (slug: string) => void }) {
   return (
     <aside className={styles.detailPanel} aria-label={`Detaljer for ${entry.title}`}>
       <Card data-color="neutral">
@@ -298,14 +291,14 @@ function DetailPanel({ entry }: { entry: SamfunnspulsCatalogEntry }) {
               </Heading>
               <div className={styles.tagList}>
                 {entry.tags.map((tag) => (
-                  <Badge key={tag} data-color="neutral">
+                  <Tag key={tag} data-color="neutral">
                     {tag}
-                  </Badge>
+                  </Tag>
                 ))}
               </div>
             </section>
 
-            <RelatedStatistics entry={entry} />
+            <RelatedStatistics entry={entry} onRelatedSelect={onRelatedSelect} />
             <AboutNumbers entry={entry} />
           </div>
         </CardBlock>
@@ -314,7 +307,13 @@ function DetailPanel({ entry }: { entry: SamfunnspulsCatalogEntry }) {
   );
 }
 
-function RelatedStatistics({ entry }: { entry: SamfunnspulsCatalogEntry }) {
+function RelatedStatistics({
+  entry,
+  onRelatedSelect,
+}: {
+  entry: SamfunnspulsCatalogEntry;
+  onRelatedSelect: (slug: string) => void;
+}) {
   if (!entry.relatedStatistics?.length) {
     return null;
   }
@@ -327,7 +326,13 @@ function RelatedStatistics({ entry }: { entry: SamfunnspulsCatalogEntry }) {
       <ul className={styles.linkList}>
         {entry.relatedStatistics.map((related) => (
           <li key={related.title}>
-            {related.path ? <Link href={related.path}>{related.title}</Link> : <span>{related.title}</span>}
+            {related.slug ? (
+              <Button data-size="sm" variant="secondary" onClick={() => onRelatedSelect(related.slug!)}>
+                {related.title}
+              </Button>
+            ) : (
+              <span>{related.title}</span>
+            )}
           </li>
         ))}
       </ul>

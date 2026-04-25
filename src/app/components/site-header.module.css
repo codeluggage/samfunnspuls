@@ -1,0 +1,57 @@
+.shell {
+  position: relative;
+  border-bottom: var(--ds-border-width-default) solid var(--ds-color-neutral-border-subtle);
+}
+
+.brandHeader {
+  display: block;
+}
+
+.nav {
+  width: min(100%, 76rem);
+  margin: 0 auto;
+  padding: 0 var(--ds-size-8) var(--ds-size-4);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ds-size-6);
+}
+
+.nav a {
+  color: var(--ds-color-primary-text-default);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav a:hover {
+  text-decoration: underline;
+}
+
+.nav :global(a[aria-current="page"]) {
+  color: var(--ds-color-neutral-text-default);
+  text-decoration: underline;
+  text-decoration-thickness: var(--ds-border-width-strong);
+  text-underline-offset: var(--ds-size-1);
+}
+
+@media (max-width: 56.25rem) {
+  .brandHeader {
+    display: none;
+  }
+
+  .shell button[aria-label="Åpne meny"],
+  .shell button[aria-label="Lukk meny"] {
+    display: none;
+  }
+
+  .nav {
+    padding: var(--ds-size-3) var(--ds-size-5);
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 35rem) {
+  .nav {
+    padding-inline: var(--ds-size-4);
+  }
+}

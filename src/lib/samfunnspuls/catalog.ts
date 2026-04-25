@@ -15,7 +15,7 @@ export type TimeDimension = "year" | "month" | "school-year" | "count-date" | "u
 
 export type RelatedStatistic = {
   title: string;
-  path?: string;
+  slug?: string;
 };
 
 export type SourceTable = {
@@ -88,7 +88,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
     valueTypes: ["count", "percent"],
     geographies: ["municipality", "county", "norway"],
     timeDimensions: ["year"],
-    relatedStatistics: [{ title: "Barn og unge i husholdninger med lavinntekt (EU-60)", path: "/utforsk-data/barn-og-unge/lavinntekt" }],
+    relatedStatistics: [{ title: "Barn og unge i husholdninger med lavinntekt (EU-60)", slug: "lavinntekt" }],
     tags: ["barn", "unge", "boforhold", "trangboddhet", "bolig"],
   },
   {
@@ -208,14 +208,14 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
     relatedStatistics: [
       {
         title: "Personer i husholdninger med lavinntekt (EU-60), hele befolkningen",
-        path: "/utforsk-data/okonomi/personer-som-tilhorer-husholdninger-med-lavinntekt-eu-60-hele-befolkningen",
+        slug: "personer-som-tilhorer-husholdninger-med-lavinntekt-eu-60-hele-befolkningen",
       },
       {
         title: "Barn og unge som bor trangt/romslig/uoppgitt",
-        path: "/utforsk-data/barn-og-unge/barn-og-unge-som-bor-trangt-romslig-uoppgitt",
+        slug: "barn-og-unge-som-bor-trangt-romslig-uoppgitt",
       },
-      { title: "Antall sosialhjelpsmottakere", path: "/utforsk-data/okonomi/antall-sosialhjelpsmottakere" },
-      { title: "Antall familier, etter familietype", path: "/utforsk-data/demografi-og-boforhold/antall-familier-etter-familietype" },
+      { title: "Antall sosialhjelpsmottakere", slug: "antall-sosialhjelpsmottakere" },
+      { title: "Antall familier, etter familietype", slug: "antall-familier-etter-familietype" },
     ],
     aboutNumbers: {
       statisticName: "Antall barn og unge under 18 år som tilhører husholdninger med lavinntekt (EU-60)",
@@ -306,7 +306,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
     valueTypes: ["count", "percent"],
     geographies: ["municipality", "county", "norway"],
     timeDimensions: ["year"],
-    relatedStatistics: [{ title: "Barn og unge i husholdninger med lavinntekt (EU-60)", path: "/utforsk-data/barn-og-unge/lavinntekt" }],
+    relatedStatistics: [{ title: "Barn og unge i husholdninger med lavinntekt (EU-60)", slug: "lavinntekt" }],
     tags: ["barn", "unge", "vedvarende lavinntekt", "EU-skala", "fattigdom"],
   },
   {
@@ -324,8 +324,8 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
     geographies: ["municipality", "county", "norway"],
     timeDimensions: ["year", "count-date"],
     relatedStatistics: [
-      { title: "Levendefødte", path: "/utforsk-data/demografi-og-boforhold/antall-levendefodte" },
-      { title: "Tilflytting", path: "/utforsk-data/demografi-og-boforhold/endringer-i-befolkningen-tilflytting" },
+      { title: "Levendefødte", slug: "antall-levendefodte" },
+      { title: "Tilflytting", slug: "endringer-i-befolkningen-tilflytting" },
     ],
     aboutNumbers: {
       statisticName: "Endringer i kommuner, fylker og hele landets befolkning - folketilvekst",
@@ -350,7 +350,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
     valueTypes: ["count"],
     geographies: ["municipality", "county", "norway"],
     timeDimensions: ["year"],
-    relatedStatistics: [{ title: "Befolkningsendring", path: "/utforsk-data/demografi-og-boforhold/befolkningsendring-folketilvekst" }],
+    relatedStatistics: [{ title: "Befolkningsendring", slug: "befolkningsendring-folketilvekst" }],
     tags: ["fødte", "levendefødte", "befolkning", "demografi", "06913"],
   },
   {
@@ -365,7 +365,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
     valueTypes: ["count"],
     geographies: ["municipality", "county", "norway"],
     timeDimensions: ["year"],
-    relatedStatistics: [{ title: "Befolkningsendring", path: "/utforsk-data/demografi-og-boforhold/befolkningsendring-folketilvekst" }],
+    relatedStatistics: [{ title: "Befolkningsendring", slug: "befolkningsendring-folketilvekst" }],
     tags: ["tilflytting", "flytting", "befolkning", "demografi", "06913"],
   },
   {
@@ -411,7 +411,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
     valueTypes: ["count"],
     geographies: ["municipality", "county", "norway"],
     timeDimensions: ["year"],
-    relatedStatistics: [{ title: "Barn og unge i husholdninger med lavinntekt (EU-60)", path: "/utforsk-data/barn-og-unge/lavinntekt" }],
+    relatedStatistics: [{ title: "Barn og unge i husholdninger med lavinntekt (EU-60)", slug: "lavinntekt" }],
     tags: ["familier", "familietype", "husholdning", "demografi"],
   },
   {
@@ -550,7 +550,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
     valueTypes: ["count", "percent"],
     geographies: ["municipality", "county", "norway"],
     timeDimensions: ["year"],
-    relatedStatistics: [{ title: "Barn og unge i husholdninger med lavinntekt (EU-60)", path: "/utforsk-data/barn-og-unge/lavinntekt" }],
+    relatedStatistics: [{ title: "Barn og unge i husholdninger med lavinntekt (EU-60)", slug: "lavinntekt" }],
     tags: ["lavinntekt", "fattigdom", "EU-60", "økonomi", "husholdninger"],
   },
   {
@@ -594,7 +594,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
     valueTypes: ["count"],
     geographies: ["municipality", "county", "norway"],
     timeDimensions: ["year"],
-    relatedStatistics: [{ title: "Barn og unge i husholdninger med lavinntekt (EU-60)", path: "/utforsk-data/barn-og-unge/lavinntekt" }],
+    relatedStatistics: [{ title: "Barn og unge i husholdninger med lavinntekt (EU-60)", slug: "lavinntekt" }],
     tags: ["sosialhjelp", "sosialhjelpsmottakere", "økonomi", "13995"],
   },
   {

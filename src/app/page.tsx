@@ -2,20 +2,20 @@
 
 import {
   Alert,
-  Badge,
   Button,
   Card,
   CardBlock,
-  Header,
+  Field,
   Heading,
   Link,
   Paragraph,
-  Select,
   SkeletonLoader,
+  Suggestion,
   Table,
   Tag,
 } from "rk-designsystem";
-import { type ChangeEvent, useEffect, useMemo, useState } from "react";
+import { type ComponentProps, useEffect, useMemo, useState } from "react";
+import { SiteHeader } from "./components/site-header";
 import styles from "./page.module.css";
 
 type PlanningSignalLevel =
@@ -72,6 +72,13 @@ type ApiResponse = {
   };
 };
 
+type AreaSuggestion = {
+  label: string;
+  value: string;
+};
+
+type SuggestionSelectedChange = NonNullable<ComponentProps<typeof Suggestion>["onSelectedChange"]>;
+
 export default function Home() {
   const [areas, setAreas] = useState<AreaPlan[]>([]);
   const [metadata, setMetadata] = useState<ApiResponse["metadata"] | null>(null);
@@ -96,7 +103,7 @@ export default function Home() {
         const data = payload as ApiResponse;
         setAreas(data.areas);
         setMetadata(data.metadata);
-        setSelectedRegionCode(data.areas[0]?.regionCode ?? "");
+        setSelectedRegionCode(findDefaultArea(data.areas)?.regionCode ?? "");
         setStatus(data.areas.length ? "ready" : "empty");
       } catch (caught) {
         if (!isActive) return;
@@ -116,30 +123,34 @@ export default function Home() {
     () => areas.find((area) => area.regionCode === selectedRegionCode) ?? areas[0],
     [areas, selectedRegionCode],
   );
+  const areaOptions = useMemo(
+    () =>
+      [...areas]
+        .sort((left, right) => formatAreaName(left).localeCompare(formatAreaName(right), "nb-NO"))
+        .map((area) => ({ label: formatAreaName(area), value: area.regionCode })),
+    [areas],
+  );
+  const selectedAreaOption = areaOptions.find((option) => option.value === selectedRegionCode);
   const topAreas = areas.slice(0, 6);
+
+  function handleAreaSuggestionChange(selected: unknown) {
+    if (!selected || Array.isArray(selected) || typeof selected !== "object") {
+      return;
+    }
+
+    const option = selected as Partial<AreaSuggestion>;
+    if (typeof option.value === "string") {
+      setSelectedRegionCode(option.value);
+    }
+  }
 
   return (
     <>
-      <Header
-        data-color="primary"
-        activePage="Aktivitetsradar"
-        navItems={[
-          { label: "Aktivitetsradar", href: "/" },
-          { label: "Utforsk data", href: "/utforsk-data" },
-        ]}
-        showHeaderExtension
-        showNavItems
-        showMenuButton={false}
-        showSearch={false}
-        showLogin={false}
-        showUser={false}
-        showThemeToggle={false}
-      />
+      <SiteHeader />
 
       <main className={styles.main}>
         <section className={styles.hero}>
           <div className={styles.heroText}>
-            <Badge data-color="info">Samfunnspuls case</Badge>
             <Heading level={1} data-size="xl">
               Aktivitetsradar for lokale humanitære behov
             </Heading>
@@ -166,21 +177,26 @@ export default function Home() {
                       {areas.length} kommuner med både SSB-indikator og minst én lokal Røde Kors-forening.
                     </Paragraph>
                   </div>
-                  <Select
-                    id="municipality"
-                    name="municipality"
-                    data-size="md"
-                    aria-label="Velg kommune"
-                    value={selectedRegionCode}
-                    onChange={(event: ChangeEvent<HTMLSelectElement>) => setSelectedRegionCode(event.target.value)}
-                  >
-                    {areas.map((area) => (
-                      <option key={area.regionCode} value={area.regionCode}>
-                        {area.municipality}
-                        {area.county ? `, ${area.county}` : ""}
-                      </option>
-                    ))}
-                  </Select>
+                  <Field>
+                    <label htmlFor="municipality-search">Søk kommune</label>
+                    <Suggestion
+                      filter
+                      name="municipality"
+                      selected={selectedAreaOption}
+                      onSelectedChange={handleAreaSuggestionChange as SuggestionSelectedChange}
+                    >
+                      <Suggestion.Input id="municipality-search" />
+                      <Suggestion.Clear />
+                      <Suggestion.List>
+                        <Suggestion.Empty>Ingen kommuner funnet</Suggestion.Empty>
+                        {areaOptions.map((option) => (
+                          <Suggestion.Option key={option.value} label={option.label} value={option.value}>
+                            {option.label}
+                          </Suggestion.Option>
+                        ))}
+                      </Suggestion.List>
+                    </Suggestion>
+                  </Field>
                 </div>
               </CardBlock>
             </Card>
@@ -223,9 +239,9 @@ export default function Home() {
                     <div className={styles.tagList} aria-label="Relevante aktiviteter">
                       {selectedArea.topRelevantActivities.length ? (
                         selectedArea.topRelevantActivities.map((activity) => (
-                          <Badge key={activity.activityName} data-color="neutral">
+                          <Tag key={activity.activityName} data-color="neutral">
                             {activity.activityName}: {activity.branchesCount}
-                          </Badge>
+                          </Tag>
                         ))
                       ) : (
                         <Paragraph>Ingen relevante aktivitetstreff i de valgte kategoriene.</Paragraph>
@@ -389,6 +405,14 @@ function formatNumber(value: number | null) {
 function formatDate(value: string | null | undefined) {
   if (!value) return "ikke oppgitt";
   return new Intl.DateTimeFormat("nb-NO", { dateStyle: "medium" }).format(new Date(value));
+}
+
+function formatAreaName(area: AreaPlan) {
+  return `${area.municipality}${area.county ? `, ${area.county}` : ""}`;
+}
+
+function findDefaultArea(areas: AreaPlan[]) {
+  return areas.find((area) => area.municipality === "Oslo") ?? areas[0];
 }
 
 function signalColor(level: PlanningSignalLevel) {
