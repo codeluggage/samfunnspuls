@@ -155,11 +155,26 @@
 
 .linkList {
   margin: 0;
-  padding-inline-start: var(--ds-size-5);
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-size-2);
 }
 
-.linkList li + li {
-  margin-top: var(--ds-size-2);
+.linkList li {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-size-3);
+}
+
+.linkList li::before {
+  content: "";
+  flex-shrink: 0;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background-color: currentColor;
 }
 
 .definitionList {
