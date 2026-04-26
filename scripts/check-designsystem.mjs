@@ -9,6 +9,7 @@ const targetArgs = process.argv.slice(2);
 const targets = resolveTargets(targetArgs.length > 0 ? targetArgs : ["src"]);
 
 const issues = [];
+const warnings = [];
 const files = collectTargetFiles(targets).filter((file) => /\.(ts|tsx|css)$/.test(file));
 
 for (const filePath of files) {
@@ -16,6 +17,15 @@ for (const filePath of files) {
   checkForbiddenPatterns(filePath, content);
   checkComponentOverrides(filePath, content);
   checkRawPrimitivePatterns(filePath, content);
+  checkBrandPatterns(filePath, content);
+}
+
+if (warnings.length > 0) {
+  console.warn("DesignSystem brand warnings (review, not blocking):\n");
+  for (const warning of warnings) {
+    console.warn(`- ${warning}`);
+  }
+  console.warn("");
 }
 
 if (issues.length > 0) {
@@ -92,6 +102,31 @@ function checkRawPrimitivePatterns(filePath, content) {
 
   if (/<div\b[^>]*className=\{styles\.(?:card|panel|surface|tile)\}/.test(content)) {
     issues.push(`${relative}: Prefer rk-designsystem Card and CardBlock over custom card shells.`);
+  }
+}
+
+function checkBrandPatterns(filePath, content) {
+  const relative = path.relative(repoRoot, filePath);
+
+  // Block emoji unicode in source. Targets pictographic blocks; preserves
+  // Norwegian (æøå), typographic dashes, ™/®/©, and the brand «…» quotation marks.
+  const emojiPattern =
+    /[\u{1F300}-\u{1FAFF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}]/u;
+  if (emojiPattern.test(content)) {
+    issues.push(
+      `${relative}: Emoji unicode is not allowed (rk-brand-design BRAND.md). Remove the emoji or replace with an Aksel icon.`,
+    );
+  }
+
+  // Warn (not block) when a Card paints a non-neutral surface for selection or
+  // decoration. Brand pattern is neutral surface + 4px accent rail or "Valgt" Tag.
+  const colouredCardPattern = /<Card\b[^>]*\bdata-color=["'](?!neutral["'])([a-z-]+)["']/g;
+  let match;
+  while ((match = colouredCardPattern.exec(content)) !== null) {
+    const role = match[1];
+    warnings.push(
+      `${relative}: <Card data-color="${role}"> paints a non-neutral surface — review whether the entire card is intentionally a ${role} message, or use neutral + accent rail.`,
+    );
   }
 }
 

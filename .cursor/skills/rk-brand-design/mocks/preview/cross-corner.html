@@ -1,0 +1,31 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>body { margin: 0; padding: 32px; background: #fff; font-family: var(--ds-font-family); display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
+  .demo { width: 140px; height: 140px; background: #fcf1f0; position: relative; border-radius: 8px; overflow: hidden; }
+  svg { position: absolute; }
+  .tl { top: 0; left: 0; }
+  .tr { top: 0; right: 0; transform: rotate(90deg); }
+  .br { bottom: 0; right: 0; transform: rotate(180deg); }
+  .bl { bottom: 0; left: 0; transform: rotate(270deg); }
+  .lbl { font-size: 12px; color: #5d5d5d; margin-top: 8px; text-align: center; font-family: var(--ds-font-family-mono); }
+</style>
+</head><body>
+<div>
+  <div class="demo">
+    <svg class="tl" width="48" height="48" viewBox="0 0 68 68"><path d="M68 0V33.8203H67.998V68H34.1777V33.8203H0V0H68Z" fill="#D52B1E"/></svg>
+  </div>
+  <div class="lbl">CrossCorner — top‑left, sm (48px)</div>
+</div>
+<div>
+  <div class="demo" style="background:#f3f3f3">
+    <svg class="br" width="68" height="68" viewBox="0 0 68 68"><path d="M68 0V33.8203H67.998V68H34.1777V33.8203H0V0H68Z" fill="#1E1E1E"/></svg>
+  </div>
+  <div class="lbl">bottom‑right, md (68px)</div>
+</div>
+<div>
+  <div class="demo" style="background:#e5e9ec">
+    <svg class="tr" width="96" height="96" viewBox="0 0 68 68"><path d="M68 0V33.8203H67.998V68H34.1777V33.8203H0V0H68Z" fill="#355770"/></svg>
+  </div>
+  <div class="lbl">top‑right, lg (96px) · ocean</div>
+</div>
+</body></html>
