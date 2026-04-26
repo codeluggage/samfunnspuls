@@ -12,7 +12,7 @@ The app combines one public humanitarian need indicator from SSB with supplied R
 - **Backend:** `GET /api/planning/areas` joins the normalized tables and returns a planning-friendly shape.
 - **Pipeline observability:** `GET /api/system/data-status` exposes ingest runs, table row counts, source freshness, and readiness checks.
 - **Frontend:** the Next.js App Router page consumes only the API route and renders a Røde Kors design-system dashboard with loading, empty, error, source metadata, mobile layout, and accessible controls.
-- **Deployment:** Vercel and Supabase.
+- **Deployment:** Vercel deployed to https://samfunnspuls-v2.vercel.app and Supabase project https://ypcjawytwpjvzmvhuzjy.supabase.co
 
 ## Data flow
 
