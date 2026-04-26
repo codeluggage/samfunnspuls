@@ -28,7 +28,7 @@ export const INDICATORS: Record<IndicatorId, IndicatorDefinition> = {
     sourceTable: "08764",
     sourceUrl: "https://data.ssb.no/api/v0/no/table/08764",
     description:
-      "Andelen barn under 18 år som bor i husholdninger med vedvarende lav inntekt etter EU-skala 60 prosent.",
+      "Andel barn under 18 år som bor i familier med lav inntekt over lengre tid.",
     direction: "higher-is-pressure",
   },
   "population-total": {
@@ -51,7 +51,7 @@ export const INDICATORS: Record<IndicatorId, IndicatorDefinition> = {
     sourceTable: "06913",
     sourceUrl: "https://data.ssb.no/api/v0/no/table/06913",
     description:
-      "Endring i folkemengden i løpet av året, regnet per 1 000 innbyggere. Negative tall betyr at folketallet synker.",
+      "Endring i folketallet, per 1 000 innbyggere. Minus betyr at folketallet gikk ned.",
     direction: "context-only",
   },
   "net-migration": {
@@ -63,7 +63,7 @@ export const INDICATORS: Record<IndicatorId, IndicatorDefinition> = {
     sourceTable: "06913",
     sourceUrl: "https://data.ssb.no/api/v0/no/table/06913",
     description:
-      "Innflyttinger minus utflyttinger i løpet av året, per 1 000 innbyggere. Et grovt mål på hvor raskt befolkningen i kommunen skiftes ut.",
+      "Om flere flyttet inn enn ut, per 1 000 innbyggere. Minus betyr at flere flyttet ut.",
     direction: "context-only",
   },
 };

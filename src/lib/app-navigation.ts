@@ -22,13 +22,13 @@ const VIEW_HINTS: Array<{ title: string; href: string; description: string; tags
   {
     title: "Velg kommune",
     href: "/",
-    description: "Lokal humanitær profil – barnefattigdom, befolkning, tilflytting og Røde Kors-aktivitet.",
+    description: "Lokal oversikt over barn i familier med lav inntekt, befolkning, flytting og Røde Kors-tilbud.",
     tags: ["kommune", "lokal", "planlegging", "lavinntekt", "befolkning"],
   },
   {
     title: "Om tallene",
     href: "/om-tallene",
-    description: "Oversikt over alle datasett, kilder og kobling til SSB, NAV, Udir og IMDi.",
+    description: "Oversikt over datasett, kilder og lenker til SSB, NAV, Udir og IMDi.",
     tags: ["datasett", "kilder", "metadata"],
   },
 ];

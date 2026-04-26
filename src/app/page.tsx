@@ -139,12 +139,12 @@ export default function HomePage() {
             aria-hidden
           />
           <div className={styles.heroInner}>
-            <Tag data-color="primary-color-red">Lokal humanitær planlegging</Tag>
+            <Tag data-color="primary-color-red">Forstå hva folk i kommunen trenger, og hva vi kan gjøre</Tag>
             <Heading level={1} data-size="xl">
-              Hva trenger lokalsamfunnet ditt?
+              Hva trenger lokalsamfunnet?
             </Heading>
             <Paragraph data-size="lg">
-              Velg en kommune og se hvordan barn, befolkning og tilflytting beveger seg — og hva Røde Kors allerede tilbyr der i dag.
+              Velg sted for å se oversikt over Røde Kors-tilbud, samt utvikling i barn, befolkning og flytting.
             </Paragraph>
 
             <div className={styles.picker}>
@@ -160,7 +160,7 @@ export default function HomePage() {
                 >
                   <Suggestion.Input
                     id="kommune-search"
-                    placeholder="Søk etter kommune – Oslo, Tønsberg, Tromsø …"
+                    placeholder="Søk etter sted"
                   />
                   <Suggestion.Clear />
                   <Suggestion.List>
@@ -175,8 +175,8 @@ export default function HomePage() {
               </Field>
               <Paragraph data-size="sm">
                 {areas.length > 0
-                  ? `${areas.length} kommuner i datasettet — sortert etter humanitær pressindikator (andel barn i lavinntekt).`
-                  : "Datasettet er tomt. Kjør npm run data:sync for å hente friske tall fra SSB."}
+                  ? `${areas.length} kommuner sortert etter andel barn i familier med lav inntekt.`
+                  : "Vi har ingen tall å vise akkurat nå."}
               </Paragraph>
             </div>
           </div>
@@ -188,7 +188,6 @@ export default function HomePage() {
         {status === "ready" && selectedArea ? (
           <ProfileView
             area={selectedArea}
-            allAreas={areas}
             topPressureAreas={topPressureAreas}
             onSelectArea={setSelectedRegionCode}
           />
@@ -202,12 +201,10 @@ export default function HomePage() {
 
 function ProfileView({
   area,
-  allAreas,
   topPressureAreas,
   onSelectArea,
 }: {
   area: AreaProfile;
-  allAreas: AreaProfile[];
   topPressureAreas: AreaProfile[];
   onSelectArea: (regionCode: string) => void;
 }) {
@@ -240,12 +237,12 @@ function ProfileView({
           <CardBlock>
             <div className={styles.cardStack}>
               <Heading level={3} data-size="md">
-                Røde Kors i {area.municipality}
+                Røde Kors-tilbud i {area.municipality}
               </Heading>
               <Paragraph data-size="sm">
                 {area.activeBranchesCount === 0
                   ? "Ingen aktive lokalforeninger registrert."
-                  : `${area.activeBranchesCount} aktive lokalforeninger, hvorav ${area.matchingBranchesCount} tilbyr aktiviteter i de prioriterte kategoriene.`}
+                  : `${area.activeBranchesCount} aktive lokalforeninger. ${area.matchingBranchesCount} har tilbud innen fokusområdene.`}
               </Paragraph>
               <ActivityCoverageList area={area} />
               {area.branches.length ? (
@@ -256,7 +253,7 @@ function ProfileView({
                       <span className={styles.branchMeta}>
                         {branch.relevantActivities.length
                           ? branch.relevantActivities.join(", ")
-                          : "Ingen aktiviteter i prioriterte kategorier"}
+                          : "Ingen tilbud funnet for fokusområdene"}
                       </span>
                       {branch.web ? (
                         <Link href={branch.web} data-size="sm">
@@ -279,10 +276,10 @@ function ProfileView({
           <CardBlock>
             <div className={styles.cardStack}>
               <Heading level={3} data-size="md">
-                Kommuner med høyest barnefattigdom i datasettet
+                Kommuner med høyest andel barn i familier med lav inntekt
               </Heading>
               <Paragraph data-size="sm">
-                Andel barn i husholdninger med lavinntekt (EU-60) — klikk for å bytte profil.
+                Klikk på en kommune i listen for å se mer.
               </Paragraph>
               <PressureRanking
                 areas={topPressureAreas}
@@ -292,10 +289,10 @@ function ProfileView({
               <Paragraph data-size="sm">
                 {area.regionCode &&
                 topPressureAreas.some((entry) => entry.regionCode === area.regionCode)
-                  ? `${area.municipality} er i topp 10 i datasettet.`
-                  : `${area.municipality} er ikke i topp 10 — bla i listen for å finne nabokommuner.`}
+                  ? `${area.municipality} er i de 10 høyest målte.`
+                  : `${area.municipality} er ikke blant de 10 høyest målte. Se listen for nabokommuner.`}
               </Paragraph>
-              <RankInDataset area={area} totalAreas={allAreas.length} />
+              <RankInDataset area={area} />
             </div>
           </CardBlock>
         </Card>
@@ -323,12 +320,12 @@ function IndicatorRow({ snapshot }: { snapshot: IndicatorSnapshot }) {
         ) : null}
         {nationalAverage !== null ? (
           <Paragraph data-size="sm">
-            Landsgjennomsnitt: {formatValue(nationalAverage, indicator.unit)}
+            Snitt for Norge: {formatValue(nationalAverage, indicator.unit)}
           </Paragraph>
         ) : null}
         {snapshot.rank !== null && snapshot.totalRanked > 0 && comparison !== "no-comparison" ? (
           <Paragraph data-size="sm">
-            Rangering: nr. {snapshot.rank} av {snapshot.totalRanked}
+            Plassering: {snapshot.rank} av {snapshot.totalRanked}
           </Paragraph>
         ) : null}
       </div>
@@ -342,10 +339,10 @@ function ActivityCoverageList({ area }: { area: AreaProfile }) {
     return (
       <Alert data-color="warning">
         <Heading level={4} data-size="xs">
-          Hvit flekk i de prioriterte kategoriene
+          Ingen registrerte tilbud for fokusområdene
         </Heading>
         <Paragraph>
-          Ingen lokal Røde Kors-aktivitet i {area.municipality} matcher kategoriene barn/ungdom, integrering eller møteplasser. Nabokommuner kan være naturlige samarbeidspunkt.
+          I {area.municipality} finner vi ingen registrerte Røde Kors-tilbud innen barn og unge, integrering eller møteplasser. Det kan være aktuelt å samarbeide med nabokommuner.
         </Paragraph>
       </Alert>
     );
@@ -365,7 +362,7 @@ function ActivityCoverageList({ area }: { area: AreaProfile }) {
           <dt>{group.label}</dt>
           <dd>
             {group.matches.length === 0 ? (
-              <span className={styles.activityMissing}>Ingen tilbud her</span>
+              <span className={styles.activityMissing}>Ingen tilbud i denne kategorien</span>
             ) : (
               group.matches
                 .map((match) => `${match.activityName} (${match.branchesCount})`)
@@ -414,35 +411,35 @@ function PressureRanking({
   );
 }
 
-function RankInDataset({ area, totalAreas }: { area: AreaProfile; totalAreas: number }) {
+function RankInDataset({ area }: { area: AreaProfile }) {
   const lowIncome = area.indicators.find((s) => s.indicator.id === "low-income-children");
   if (!lowIncome || lowIncome.rank === null || lowIncome.totalRanked === 0) return null;
 
   return (
     <Paragraph data-size="sm">
-      {area.municipality} er nr. {lowIncome.rank} av {lowIncome.totalRanked} kommuner sortert på barnefattigdom (totalt {totalAreas} kommuner i datasettet).
+      {area.municipality} er nummer {lowIncome.rank} på listen.
     </Paragraph>
   );
 }
 
 function SourceFootnote({ metadata }: { metadata: ApiResponse["metadata"] }) {
   return (
-    <footer className={styles.sourceFootnote} aria-label="Datagrunnlag">
+    <footer className={styles.sourceFootnote} aria-label="Kilder">
       <Heading level={2} data-size="xs">
-        Datagrunnlag
+        Kilder
       </Heading>
       <ul className={styles.sourceList}>
         {metadata.sources.map((source) => (
           <li key={source.id}>
             <Link href={source.url}>{source.label}</Link>
             <span className={styles.sourceMeta}>
-              Kildedato {formatDate(source.sourceUpdatedAt)} · synkronisert {formatDate(source.importedAt)}
+              Oppdatert hos kilden: {formatDate(source.sourceUpdatedAt)}. Hentet inn: {formatDate(source.importedAt)}.
             </span>
           </li>
         ))}
       </ul>
       <Paragraph data-size="sm">
-        Mer om tallene: <Link href="/om-tallene">Om tallene og datasettene</Link>
+        <Link href="/om-tallene">Les mer om tallene og datakildene</Link>
       </Paragraph>
     </footer>
   );
@@ -466,7 +463,7 @@ function ErrorState({ message }: { message: string }) {
   return (
     <Alert data-color="danger">
       <Heading level={2} data-size="sm">
-        Data kunne ikke hentes
+        Ingen tall lastet inn
       </Heading>
       <Paragraph>{message}</Paragraph>
     </Alert>
@@ -477,20 +474,20 @@ function EmptyState() {
   return (
     <Alert data-color="warning">
       <Heading level={2} data-size="sm">
-        Ingen data tilgjengelig
+        Ingen tall tilgjengelig
       </Heading>
       <Paragraph>
-        Start lokal Supabase og kjør <code>npm run data:sync</code> for å hente tall fra SSB og Røde Kors-organisasjonsdata.
+        Vi mangler datagrunnlag for denne visningen.
       </Paragraph>
     </Alert>
   );
 }
 
 function pressureLabel(band: AreaProfile["pressureBand"]) {
-  if (band === "high") return "Høy humanitær press";
-  if (band === "moderate") return "Moderat press";
-  if (band === "lower") return "Lavere utslag";
-  return "Ufullstendig datagrunnlag";
+  if (band === "high") return "Stort behov";
+  if (band === "moderate") return "Middels behov";
+  if (band === "lower") return "Mindre behov";
+  return "For lite data";
 }
 
 function pressureColor(band: AreaProfile["pressureBand"]):

@@ -461,22 +461,22 @@ function buildNarrative({
           ? "lavere enn landsgjennomsnittet"
           : "rundt landsgjennomsnittet";
     sentences.push(
-      `Andelen barn i lavinntekt i ${municipality} er ${compare} (${formatPercent(lowIncome.value)} mot ${formatPercent(lowIncome.nationalAverage)} nasjonalt).`,
+      `I ${municipality} er andelen barn i familier med lav inntekt ${compare} (${formatPercent(lowIncome.value)} mot ${formatPercent(lowIncome.nationalAverage)} i Norge).`,
     );
   }
 
   if (growth?.value !== null && growth?.value !== undefined) {
     if (growth.value > 5) {
       sentences.push(
-        `Folketallet vokser raskt — netto vekst tilsvarer ${formatPerMille(growth.value)} per 1 000 innbyggere siste år.`,
+        `Folketallet økte tydelig, med ${formatPerMille(growth.value)} per 1 000 innbyggere.`,
       );
     } else if (growth.value < -5) {
       sentences.push(
-        `Folketallet synker — netto endring var ${formatPerMille(growth.value)} per 1 000 innbyggere siste år.`,
+        `Folketallet gikk ned, med ${formatPerMille(growth.value)} per 1 000 innbyggere.`,
       );
     } else {
       sentences.push(
-        `Folketallet er relativt stabilt (${formatPerMille(growth.value)} per 1 000 innbyggere).`,
+        `Folketallet er omtrent stabilt (${formatPerMille(growth.value)} per 1 000 innbyggere).`,
       );
     }
   }
@@ -484,26 +484,26 @@ function buildNarrative({
   if (netMigration?.value !== null && netMigration?.value !== undefined) {
     if (netMigration.value > 5) {
       sentences.push(
-        `Kommunen har stor tilflytting (${formatPerMille(netMigration.value)} per 1 000), noe som kan bety nye behov for integrering, norsktrening og møteplasser.`,
+        `Mange flytter til kommunen (${formatPerMille(netMigration.value)} per 1 000), som potensielt kan bety større behov for integrering, norsktrening og møteplasser.`,
       );
     } else if (netMigration.value < -5) {
       sentences.push(
-        `Det er netto utflytting (${formatPerMille(netMigration.value)} per 1 000), som ofte påvirker eldre som blir igjen og lokalt frivillig miljø.`,
+        `Flere flytter ut enn inn (${formatPerMille(netMigration.value)} per 1 000). Det kan påvirke lokalmiljøet og frivilligheten.`,
       );
     }
   }
 
   if (branchesWithActivityCount === 0) {
     sentences.push(
-      `Ingen registrerte Røde Kors-aktiviteter i de prioriterte kategoriene her i dag — dette er et område der nye tilbud kan ha stor effekt.`,
+      `Det er ingen registrerte Røde Kors-tilbud innen fokusområdene her nå, som potensielt kan bety at det vil ha stor verdi.`,
     );
   } else if (branchesWithActivityCount === 1) {
     sentences.push(
-      `Én lokal Røde Kors-forening tilbyr i dag relevante aktiviteter — kapasiteten er begrenset.`,
+      `Kun én lokal Røde Kors-forening har relevante tilbud i dag.`,
     );
   } else {
     sentences.push(
-      `${branchesWithActivityCount} lokale Røde Kors-foreninger tilbyr i dag relevante aktiviteter i kommunen.`,
+      `${branchesWithActivityCount} lokale Røde Kors-foreninger har relevante tilbud i kommunen.`,
     );
   }
 

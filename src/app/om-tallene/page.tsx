@@ -60,15 +60,15 @@ export default function UtforskDataPage() {
             <div className={styles.heroText}>
               <Tag data-color="primary-color-red">Om tallene</Tag>
               <Heading level={1} data-size="xl">
-                Datakildene bak Samfunnspuls
+                Kildene vi bruker i Samfunnspuls
               </Heading>
               <Paragraph data-size="lg">
-                Oversikt over statistikkene som ligger til grunn for kommune­profilene. Søk etter tema, tabellnummer eller kilde for å finne kobling til SSB, NAV, Udir og IMDi.
+                Her finner du tallene bak kommuneprofilene. Søk på tema, tabellnummer eller kilde, for eksempel SSB, NAV, Udir eller IMDi.
               </Paragraph>
             </div>
             <div className={styles.heroStats} aria-label="Katalogstatus">
               <p className={styles.heroStatsValue}>{SAMFUNNSPULS_CATALOG.length}</p>
-              <Paragraph data-size="sm">statistikker kartlagt</Paragraph>
+              <Paragraph data-size="sm">statistikker registrert</Paragraph>
             </div>
           </div>
         </section>
@@ -79,8 +79,8 @@ export default function UtforskDataPage() {
               <Textfield
                 id="catalog-search"
                 name="catalog-search"
-                label="Søk i datakatalogen"
-                description="Prøv for eksempel lavinntekt, 08764, NAV arbeidsledige eller sykehjem 12292."
+                label="Søk i dataoversikten"
+                description="Eksempler: lav inntekt, 08764, NAV arbeidsledige eller sykehjem 12292."
                 value={query}
                 onChange={(event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}
               />
@@ -138,7 +138,7 @@ export default function UtforskDataPage() {
                 </Field>
 
                 <Field>
-                  <label htmlFor="catalog-status">Datastatus</label>
+                  <label htmlFor="catalog-status">Status for datakilden</label>
                   <Select
                     id="catalog-status"
                     name="catalog-status"
@@ -198,7 +198,7 @@ export default function UtforskDataPage() {
                 <Heading level={2} data-size="md">
                   Ingen treff
                 </Heading>
-                <Paragraph>Prøv et bredere søk, fjern et filter, eller søk etter kilde som SSB, NAV, Udir eller IMDi.</Paragraph>
+                <Paragraph>Prøv et bredere søk, fjern et filter, eller søk på en kilde som SSB, NAV, Udir eller IMDi.</Paragraph>
               </div>
             </CardBlock>
           </Card>
@@ -259,7 +259,7 @@ function ResultCard({
                 {entry.title}
               </Heading>
             </div>
-            <Paragraph data-size="sm">{entry.summary ?? "Ikke kartlagt ennå"}</Paragraph>
+            <Paragraph data-size="sm">{entry.summary ?? "Ikke registrert ennå"}</Paragraph>
             <div className={styles.tagList} aria-label={`Metadata for ${entry.title}`}>
               <Tag data-color="neutral">{entry.category}</Tag>
               <Tag data-color="neutral">{entry.source}</Tag>
@@ -275,7 +275,7 @@ function ResultCard({
               onClick={onSelect}
               aria-pressed={isSelected}
             >
-              {isSelected ? "Viser detaljer" : "Vis detaljer"}
+              {isSelected ? "Detaljer vises" : "Se detaljer"}
             </Button>
           </article>
         </CardBlock>
@@ -296,7 +296,7 @@ function DetailPanel({ entry, onRelatedSelect }: { entry: SamfunnspulsCatalogEnt
                 {entry.title}
               </Heading>
             </div>
-            <Paragraph>{entry.summary ?? "Ikke kartlagt ennå"}</Paragraph>
+            <Paragraph>{entry.summary ?? "Ikke registrert ennå"}</Paragraph>
 
             <dl className={styles.metaList}>
               <div>
@@ -320,7 +320,7 @@ function DetailPanel({ entry, onRelatedSelect }: { entry: SamfunnspulsCatalogEnt
                 <dd>{entry.valueTypes.map(valueTypeLabel).join(", ")}</dd>
               </div>
               <div>
-                <dt>Datakobling</dt>
+                <dt>Slik hentes tallene</dt>
                 <dd>{sourceDetails(entry)}</dd>
               </div>
             </dl>
@@ -388,7 +388,7 @@ function AboutNumbers({ entry }: { entry: SamfunnspulsCatalogEntry }) {
       <Details data-color="neutral">
         <Details.Summary>Om tallene</Details.Summary>
         <Details.Content>
-          <Paragraph>Ikke kartlagt ennå.</Paragraph>
+          <Paragraph>Ikke registrert ennå.</Paragraph>
         </Details.Content>
       </Details>
     );
@@ -435,7 +435,7 @@ function OptionalMeta({ label, value }: { label: string; value: string | undefin
   return (
     <div>
       <dt>{label}</dt>
-      <dd>{value ?? "Ikke kartlagt ennå"}</dd>
+      <dd>{value ?? "Ikke registrert ennå"}</dd>
     </div>
   );
 }
@@ -443,17 +443,17 @@ function OptionalMeta({ label, value }: { label: string; value: string | undefin
 function sourceDetails(entry: SamfunnspulsCatalogEntry) {
   const parts = [
     ...(entry.ssbTables?.map((table) => `SSB ${table.id}`) ?? []),
-    entry.powerBiReportId ? "Power BI rapport-ID kjent" : null,
+    entry.powerBiReportId ? "Power BI-rapport funnet" : null,
     ...(entry.otherApiHints ?? []),
   ].filter(Boolean);
 
-  return parts.length ? parts.join(", ") : "Ikke kartlagt ennå";
+  return parts.length ? parts.join(", ") : "Ikke registrert ennå";
 }
 
 function statusLabel(statusValue: CatalogStatus) {
-  if (statusValue === "integrated") return "Integrert";
-  if (statusValue === "api-known") return "API kjent";
-  return "Metadata";
+  if (statusValue === "integrated") return "Klar i løsningen";
+  if (statusValue === "api-known") return "Datakilde funnet";
+  return "Ingen data tilgjengelig ennå";
 }
 
 function statusColor(statusValue: CatalogStatus) {
