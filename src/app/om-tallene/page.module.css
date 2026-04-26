@@ -1,0 +1,236 @@
+.main {
+  width: min(100%, 76rem);
+  margin: 0 auto;
+  padding: var(--ds-size-8);
+  display: grid;
+  gap: var(--ds-size-5);
+}
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--ds-border-radius-lg);
+  padding-block: var(--ds-size-22) var(--ds-size-15);
+  padding-inline: var(--ds-size-8);
+  background: var(--ds-color-primary-color-red-background-tinted);
+}
+
+.heroDecor {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("/brand/herosectionbg.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.heroInner {
+  max-width: 60rem;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(10rem, 1fr);
+  gap: var(--ds-size-6);
+  align-items: end;
+}
+
+.heroText {
+  display: grid;
+  gap: var(--ds-size-3);
+  justify-items: start;
+}
+
+.heroStats {
+  display: grid;
+  gap: var(--ds-size-1);
+  justify-items: end;
+  text-align: end;
+  color: var(--ds-color-neutral-text-subtle);
+}
+
+.heroStatsValue {
+  margin: 0;
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-heading-lg-font-size);
+  font-weight: var(--ds-font-weight-medium);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--ds-color-neutral-text-default);
+}
+
+.searchPanel,
+.detailStack,
+.sectionStack,
+.emptyState {
+  display: grid;
+  gap: var(--ds-size-3);
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--ds-size-3);
+}
+
+.resultsHeader {
+  display: flex;
+  gap: var(--ds-size-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.resultsLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(22rem, 1.05fr);
+  gap: var(--ds-size-4);
+  align-items: start;
+}
+
+.resultList {
+  display: grid;
+  gap: var(--ds-size-3);
+}
+
+.resultItem,
+.resultItemSelected {
+  border-radius: var(--ds-border-radius-md);
+  position: relative;
+}
+
+.resultItemSelected {
+  box-shadow:
+    inset 0 0 0 var(--ds-border-width-default) var(--ds-color-primary-color-red-border-subtle),
+    inset var(--ds-size-1) 0 0 0 var(--ds-color-primary-color-red-base-default);
+}
+
+.resultCard {
+  display: grid;
+  gap: var(--ds-size-3);
+}
+
+.resultTitle {
+  display: grid;
+  gap: var(--ds-size-2);
+}
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-size-2);
+}
+
+.detailPanel {
+  position: sticky;
+  top: var(--ds-size-4);
+}
+
+.metaList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ds-size-3);
+  margin: 0;
+}
+
+.metaList div {
+  display: grid;
+  gap: var(--ds-size-1);
+}
+
+.metaList dt {
+  color: var(--ds-color-neutral-text-subtle);
+  font-weight: var(--ds-font-weight-semibold);
+}
+
+.metaList dd {
+  margin: 0;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-size-2);
+}
+
+.linkList {
+  margin: 0;
+  padding-inline-start: var(--ds-size-5);
+}
+
+.linkList li + li {
+  margin-top: var(--ds-size-2);
+}
+
+.definitionList {
+  display: grid;
+  gap: var(--ds-size-2);
+  margin-block-start: var(--ds-size-3);
+}
+
+.emptyExamples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-size-2);
+}
+
+.srOnly {
+  position: absolute;
+  width: 0.0625rem;
+  height: 0.0625rem;
+  padding: 0;
+  margin: -0.0625rem;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 60rem) {
+  .main {
+    padding: var(--ds-size-5);
+  }
+
+  .hero {
+    padding-block: var(--ds-size-15) var(--ds-size-10);
+    padding-inline: var(--ds-size-5);
+  }
+
+  .heroInner,
+  .resultsLayout {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .heroStats {
+    justify-items: start;
+    text-align: start;
+  }
+
+  .detailPanel {
+    position: static;
+  }
+
+  .filters,
+  .metaList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 35rem) {
+  .main {
+    padding: var(--ds-size-4);
+  }
+
+  .hero {
+    padding-block: var(--ds-size-12) var(--ds-size-8);
+    padding-inline: var(--ds-size-4);
+  }
+
+  .filters,
+  .metaList,
+  .resultsHeader {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

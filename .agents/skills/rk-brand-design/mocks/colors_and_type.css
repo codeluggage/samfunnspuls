@@ -1,0 +1,352 @@
+/* Røde Kors Design System — Foundations
+ * ---------------------------------------------------------------------------
+ * Adapted from rk-design-tokens v1.7.1 (build v1.9.0) and norwegianredcross/
+ * DesignSystem App.css. The full token set lives in tokens/theme.css; this
+ * file mirrors the most-used variables and adds short-form aliases so HTML
+ * mocks built from this folder can use them without any setup.
+ *
+ * Token naming follows the Digdir Designsystemet convention:
+ *   --ds-color-{role}-{slot}-{variant}
+ * Roles include: primary-color-red, secondary-color-orange/rust/pink,
+ *   additional-color-ocean/jungle, neutral, info, success, warning, danger.
+ * Slots: background, surface, border, text, base.
+ * Variants: default, tinted, hover, active, subtle, strong, contrast-*.
+ * ---------------------------------------------------------------------------
+ */
+
+/* ------------------------------------------------------------------ Fonts */
+/* Source Sans 3 (formerly Source Sans Pro) — the brand body face */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
+/* JetBrains Mono — used in code samples on the docs site */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  /* ---------- TYPOGRAPHY: family + weights ---------- */
+  --ds-font-family: 'Source Sans 3', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --ds-font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ds-font-weight-regular: 400;
+  --ds-font-weight-medium: 500;
+  --ds-font-weight-semibold: 700;
+
+  /* ---------- TYPE SCALE (relative to 1rem) ----------
+     Base = 18px. Headings use medium (500), body uses regular (400). */
+  --ds-font-size-1: 0.75rem;     /* 13.5px */
+  --ds-font-size-2: 0.875rem;    /* 15.75px — caption */
+  --ds-font-size-3: 1rem;        /* 18px — body sm */
+  --ds-font-size-4: 1.125rem;    /* 20.25px — body md */
+  --ds-font-size-5: 1.3125rem;   /* 23.6px — body lg / heading 2xs */
+  --ds-font-size-6: 1.5rem;      /* 27px — heading sm */
+  --ds-font-size-7: 1.875rem;    /* 33.75px — heading md */
+  --ds-font-size-8: 2.25rem;     /* 40.5px — heading lg */
+  --ds-font-size-9: 3rem;        /* 54px — heading xl */
+  --ds-font-size-10: 3.75rem;    /* 67.5px — heading 2xl */
+
+  /* Semantic type aliases */
+  --ds-heading-2xl-font-size: var(--ds-font-size-10);
+  --ds-heading-xl-font-size: var(--ds-font-size-9);
+  --ds-heading-lg-font-size: var(--ds-font-size-8);
+  --ds-heading-md-font-size: var(--ds-font-size-7);
+  --ds-heading-sm-font-size: var(--ds-font-size-6);
+  --ds-heading-xs-font-size: var(--ds-font-size-5);
+  --ds-heading-2xs-font-size: var(--ds-font-size-4);
+
+  --ds-body-xl-font-size: var(--ds-font-size-6);
+  --ds-body-lg-font-size: var(--ds-font-size-5);
+  --ds-body-md-font-size: var(--ds-font-size-4);
+  --ds-body-sm-font-size: var(--ds-font-size-3);
+  --ds-body-xs-font-size: var(--ds-font-size-2);
+
+  /* All headings: 500 / 1.3 / -0.005em (varies slightly with size) */
+  --ds-heading-line-height: 1.3;
+  --ds-heading-weight: 500;
+  --ds-body-line-height: 1.5;     /* sm/md */
+  --ds-body-line-height-long: 1.7;
+  --ds-body-line-height-short: 1.3;
+
+  /* ---------- PRIMARY: RED (#D52B1E — Røde Kors red) ---------- */
+  --ds-color-primary-color-red-background-default: #ffffff;
+  --ds-color-primary-color-red-background-tinted: #fcf1f0;
+  --ds-color-primary-color-red-surface-default: #ffffff;
+  --ds-color-primary-color-red-surface-tinted: #fae4e2;
+  --ds-color-primary-color-red-surface-hover: #f6d2cf;
+  --ds-color-primary-color-red-surface-active: #f2bdb9;
+  --ds-color-primary-color-red-border-subtle: #eeaba6;
+  --ds-color-primary-color-red-border-default: #da4236;
+  --ds-color-primary-color-red-border-strong: #b42419;
+  --ds-color-primary-color-red-text-subtle: #b42419;
+  --ds-color-primary-color-red-text-default: #57110c;
+  --ds-color-primary-color-red-base-default: #D52B1E;
+  --ds-color-primary-color-red-base-hover: #b12419;
+  --ds-color-primary-color-red-base-active: #8e1d14;
+  --ds-color-primary-color-red-base-contrast-subtle: #fdf4f4;
+  --ds-color-primary-color-red-base-contrast-default: #ffffff;
+
+  /* ---------- SECONDARY: ORANGE (#EA5A2A) ---------- */
+  --ds-color-secondary-color-orange-background-tinted: #fdf1ed;
+  --ds-color-secondary-color-orange-surface-tinted: #fce4dc;
+  --ds-color-secondary-color-orange-surface-hover: #f9d1c4;
+  --ds-color-secondary-color-orange-border-subtle: #f4aa91;
+  --ds-color-secondary-color-orange-border-default: #cf4f25;
+  --ds-color-secondary-color-orange-text-default: #4c1d0e;
+  --ds-color-secondary-color-orange-base-default: #EA5A2A;
+  --ds-color-secondary-color-orange-base-hover: #ef7f5a;
+  --ds-color-secondary-color-orange-base-contrast-default: #000000;
+
+  /* ---------- SECONDARY: RUST (#96171A — deep crimson) ---------- */
+  --ds-color-secondary-color-rust-background-tinted: #f9f2f2;
+  --ds-color-secondary-color-rust-surface-tinted: #f3e5e6;
+  --ds-color-secondary-color-rust-border-default: #b65f61;
+  --ds-color-secondary-color-rust-text-default: #590e0f;
+  --ds-color-secondary-color-rust-base-default: #96171A;
+  --ds-color-secondary-color-rust-base-hover: #731214;
+  --ds-color-secondary-color-rust-base-contrast-default: #ffffff;
+
+  /* ---------- SECONDARY: PINK (#F16670) ---------- */
+  --ds-color-secondary-color-pink-background-tinted: #fef0f1;
+  --ds-color-secondary-color-pink-surface-tinted: #fce2e4;
+  --ds-color-secondary-color-pink-border-default: #c6545c;
+  --ds-color-secondary-color-pink-text-default: #481f22;
+  --ds-color-secondary-color-pink-base-default: #F16670;
+  --ds-color-secondary-color-pink-base-hover: #f48a92;
+  --ds-color-secondary-color-pink-base-contrast-default: #000000;
+
+  /* ---------- ADDITIONAL: OCEAN (#355770 — navy blue) ---------- */
+  --ds-color-additional-color-ocean-background-tinted: #f2f4f5;
+  --ds-color-additional-color-ocean-surface-tinted: #e5e9ec;
+  --ds-color-additional-color-ocean-border-default: #627c90;
+  --ds-color-additional-color-ocean-text-default: #1c2d3a;
+  --ds-color-additional-color-ocean-base-default: #355770;
+  --ds-color-additional-color-ocean-base-hover: #294457;
+  --ds-color-additional-color-ocean-base-contrast-default: #ffffff;
+
+  /* ---------- ADDITIONAL: JUNGLE (#6C733E — olive) ---------- */
+  --ds-color-additional-color-jungle-background-tinted: #f3f4f0;
+  --ds-color-additional-color-jungle-surface-tinted: #e8e9e1;
+  --ds-color-additional-color-jungle-border-default: #767d4b;
+  --ds-color-additional-color-jungle-text-default: #2a2d18;
+  --ds-color-additional-color-jungle-base-default: #6C733E;
+  --ds-color-additional-color-jungle-base-hover: #595f33;
+  --ds-color-additional-color-jungle-base-contrast-default: #ffffff;
+
+  /* ---------- NEUTRAL ---------- */
+  --ds-color-neutral-background-default: #ffffff;
+  --ds-color-neutral-background-tinted: #f3f3f3;
+  --ds-color-neutral-surface-default: #ffffff;
+  --ds-color-neutral-surface-tinted: #e8e8e8;
+  --ds-color-neutral-surface-hover: #dadada;
+  --ds-color-neutral-surface-active: #cacaca;
+  --ds-color-neutral-border-subtle: #bcbcbc;
+  --ds-color-neutral-border-default: #797979;
+  --ds-color-neutral-border-strong: #5d5d5d;
+  --ds-color-neutral-text-subtle: #5d5d5d;
+  --ds-color-neutral-text-default: #2b2b2b;
+  --ds-color-neutral-base-default: #1E1E1E;
+  --ds-color-neutral-base-hover: #2f2f2f;
+  --ds-color-neutral-base-contrast-default: #ffffff;
+
+  /* ---------- SEMANTIC: INFO / SUCCESS / WARNING / DANGER ---------- */
+  --ds-color-info-background-tinted: #edf5fa;
+  --ds-color-info-surface-tinted: #dcebf6;
+  --ds-color-info-border-default: #1f7dc5;
+  --ds-color-info-text-subtle: #0860a3;
+  --ds-color-info-text-default: #042d4d;
+  --ds-color-info-base-default: #0A71C0;
+  --ds-color-info-base-hover: #085d9f;
+  --ds-color-info-base-contrast-default: #ffffff;
+
+  --ds-color-success-background-tinted: #ecf6ee;
+  --ds-color-success-surface-tinted: #daeddd;
+  --ds-color-success-border-default: #108c22;
+  --ds-color-success-text-subtle: #056d13;
+  --ds-color-success-text-default: #023409;
+  --ds-color-success-base-default: #068718;
+  --ds-color-success-base-hover: #057014;
+  --ds-color-success-base-contrast-default: #ffffff;
+
+  --ds-color-warning-background-tinted: #fcf2e2;
+  --ds-color-warning-surface-tinted: #fae6c6;
+  --ds-color-warning-border-default: #a56d13;
+  --ds-color-warning-text-subtle: #80540f;
+  --ds-color-warning-text-default: #3c2807;
+  --ds-color-warning-base-default: #EA9B1B;
+  --ds-color-warning-base-hover: #cd8818;
+  --ds-color-warning-base-contrast-default: #000000;
+
+  --ds-color-danger-background-tinted: #fbf1f1;
+  --ds-color-danger-surface-tinted: #f8e4e4;
+  --ds-color-danger-border-default: #ce4d4d;
+  --ds-color-danger-text-subtle: #b81a1a;
+  --ds-color-danger-text-default: #590d0d;
+  --ds-color-danger-base-default: #C01B1B;
+  --ds-color-danger-base-hover: #9b1616;
+  --ds-color-danger-base-contrast-default: #ffffff;
+
+  /* ---------- FOCUS / LINK ---------- */
+  --ds-color-focus-inner: #ffffff;
+  --ds-color-focus-outer: #2b2b2b;
+  --ds-link-color-visited: #663299;
+
+  /* ---------- ACTIVE ROLE (default = primary red) ---------- */
+  /* Set [data-color="..."] on a parent to switch which palette these resolve to */
+  --ds-color-base-default: var(--ds-color-primary-color-red-base-default);
+  --ds-color-base-hover: var(--ds-color-primary-color-red-base-hover);
+  --ds-color-surface-tinted: var(--ds-color-primary-color-red-surface-tinted);
+  --ds-color-border-default: var(--ds-color-primary-color-red-border-default);
+  --ds-color-text-default: var(--ds-color-primary-color-red-text-default);
+
+  /* ---------- SPACING (4px step on 18px base) ---------- */
+  --ds-size-unit: 0.25rem; /* 4px */
+  --ds-size-1: 0.25rem;   /* 4px  */
+  --ds-size-2: 0.5rem;    /* 8px  */
+  --ds-size-3: 0.75rem;   /* 12px */
+  --ds-size-4: 1rem;      /* 16px */
+  --ds-size-5: 1.25rem;   /* 20px */
+  --ds-size-6: 1.5rem;    /* 24px */
+  --ds-size-7: 1.75rem;   /* 28px */
+  --ds-size-8: 2rem;      /* 32px */
+  --ds-size-9: 2.25rem;   /* 36px */
+  --ds-size-10: 2.5rem;   /* 40px */
+  --ds-size-11: 2.75rem;  /* 44px — minimum touch target */
+  --ds-size-12: 3rem;     /* 48px */
+  --ds-size-15: 3.75rem;  /* 60px */
+  --ds-size-18: 4.5rem;   /* 72px */
+  --ds-size-22: 5.5rem;   /* 88px */
+  --ds-size-26: 6.5rem;   /* 104px */
+  --ds-size-30: 7.5rem;   /* 120px */
+
+  /* ---------- BORDER RADIUS ---------- */
+  --ds-border-radius-sm: 0.125rem;   /* 2px  — inputs, small chips */
+  --ds-border-radius-md: 0.25rem;    /* 4px  — buttons, fields, cards */
+  --ds-border-radius-lg: 0.5rem;     /* 8px  — large cards / hero images */
+  --ds-border-radius-xl: 0.75rem;    /* 12px — bento blocks */
+  --ds-border-radius-default: var(--ds-border-radius-md);
+  --ds-border-radius-full: 9999px;
+  --ds-border-width-default: 1px;
+  --ds-border-width-focus: 3px;
+
+  /* ---------- SHADOW SYSTEM ---------- */
+  --ds-shadow-xs: 0 0 1px 0 rgba(0,0,0,0.16), 0 1px 2px 0 rgba(0,0,0,0.12);
+  --ds-shadow-sm: 0 0 1px 0 rgba(0,0,0,0.15), 0 1px 2px 0 rgba(0,0,0,0.12), 0 2px 4px 0 rgba(0,0,0,0.10);
+  --ds-shadow-md: 0 0 1px 0 rgba(0,0,0,0.14), 0 2px 4px 0 rgba(0,0,0,0.12), 0 4px 8px 0 rgba(0,0,0,0.12);
+  --ds-shadow-lg: 0 0 1px 0 rgba(0,0,0,0.13), 0 3px 5px 0 rgba(0,0,0,0.13), 0 6px 12px 0 rgba(0,0,0,0.14);
+  --ds-shadow-xl: 0 0 1px 0 rgba(0,0,0,0.12), 0 4px 8px 0 rgba(0,0,0,0.16), 0 12px 24px 0 rgba(0,0,0,0.16);
+
+  /* ---------- MOTION (App-level additions) ---------- */
+  --ds-duration-fast: 160ms;
+  --ds-duration-base: 260ms;
+  --ds-duration-slow: 480ms;
+  --ds-duration-showcase: 2400ms;
+  --ds-ease-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
+  --ds-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ---------- OPACITY ---------- */
+  --ds-opacity-disabled: 30%;
+}
+
+/* ------------------------------------------------------------------ Color role swap */
+[data-color="primary-color-red"] {
+  --ds-color-base-default: var(--ds-color-primary-color-red-base-default);
+  --ds-color-base-hover: var(--ds-color-primary-color-red-base-hover);
+  --ds-color-surface-tinted: var(--ds-color-primary-color-red-surface-tinted);
+  --ds-color-border-default: var(--ds-color-primary-color-red-border-default);
+  --ds-color-text-default: var(--ds-color-primary-color-red-text-default);
+  --ds-color-base-contrast-default: var(--ds-color-primary-color-red-base-contrast-default);
+}
+[data-color="neutral"] {
+  --ds-color-base-default: var(--ds-color-neutral-base-default);
+  --ds-color-base-hover: var(--ds-color-neutral-base-hover);
+  --ds-color-surface-tinted: var(--ds-color-neutral-surface-tinted);
+  --ds-color-border-default: var(--ds-color-neutral-border-default);
+  --ds-color-text-default: var(--ds-color-neutral-text-default);
+  --ds-color-base-contrast-default: var(--ds-color-neutral-base-contrast-default);
+}
+[data-color="danger"] {
+  --ds-color-base-default: var(--ds-color-danger-base-default);
+  --ds-color-base-hover: var(--ds-color-danger-base-hover);
+  --ds-color-surface-tinted: var(--ds-color-danger-surface-tinted);
+  --ds-color-border-default: var(--ds-color-danger-border-default);
+  --ds-color-text-default: var(--ds-color-danger-text-default);
+  --ds-color-base-contrast-default: var(--ds-color-danger-base-contrast-default);
+}
+[data-color="info"] {
+  --ds-color-base-default: var(--ds-color-info-base-default);
+  --ds-color-base-hover: var(--ds-color-info-base-hover);
+  --ds-color-surface-tinted: var(--ds-color-info-surface-tinted);
+  --ds-color-border-default: var(--ds-color-info-border-default);
+  --ds-color-text-default: var(--ds-color-info-text-default);
+  --ds-color-base-contrast-default: var(--ds-color-info-base-contrast-default);
+}
+[data-color="success"] {
+  --ds-color-base-default: var(--ds-color-success-base-default);
+  --ds-color-base-hover: var(--ds-color-success-base-hover);
+  --ds-color-surface-tinted: var(--ds-color-success-surface-tinted);
+  --ds-color-border-default: var(--ds-color-success-border-default);
+  --ds-color-text-default: var(--ds-color-success-text-default);
+  --ds-color-base-contrast-default: var(--ds-color-success-base-contrast-default);
+}
+[data-color="warning"] {
+  --ds-color-base-default: var(--ds-color-warning-base-default);
+  --ds-color-base-hover: var(--ds-color-warning-base-hover);
+  --ds-color-surface-tinted: var(--ds-color-warning-surface-tinted);
+  --ds-color-border-default: var(--ds-color-warning-border-default);
+  --ds-color-text-default: var(--ds-color-warning-text-default);
+  --ds-color-base-contrast-default: var(--ds-color-warning-base-contrast-default);
+}
+
+/* ------------------------------------------------------------------ Element defaults */
+html, body {
+  font-family: var(--ds-font-family);
+  color: var(--ds-color-neutral-text-default);
+  background: var(--ds-color-neutral-background-default);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--ds-font-family);
+  font-weight: var(--ds-heading-weight);
+  line-height: var(--ds-heading-line-height);
+  letter-spacing: -0.005em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 { font-size: var(--ds-heading-2xl-font-size); letter-spacing: -0.01em; }
+h2 { font-size: var(--ds-heading-xl-font-size);  letter-spacing: -0.01em; }
+h3 { font-size: var(--ds-heading-lg-font-size); }
+h4 { font-size: var(--ds-heading-md-font-size); }
+h5 { font-size: var(--ds-heading-sm-font-size); }
+h6 { font-size: var(--ds-heading-xs-font-size); letter-spacing: 0.0015em; }
+
+p {
+  font-size: var(--ds-body-md-font-size);
+  line-height: var(--ds-body-line-height);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--ds-font-family-mono);
+  font-size: 0.95em;
+}
+
+a {
+  color: var(--ds-color-info-base-default);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+a:visited { color: var(--ds-link-color-visited); }
+a:hover { color: var(--ds-color-info-base-hover); }
+
+:focus-visible {
+  outline: var(--ds-border-width-focus) solid var(--ds-color-focus-outer);
+  outline-offset: 2px;
+}
+
+/* Utility: card preview wrapper for design-system tab */
+.preview-frame {
+  font-family: var(--ds-font-family);
+  color: var(--ds-color-neutral-text-default);
+  padding: 24px;
+  background: #fff;
+  box-sizing: border-box;
+}

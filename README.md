@@ -10,21 +10,23 @@ The app combines one public humanitarian need indicator from SSB with supplied R
 - **Supplied Røde Kors data:** `docs/data/api-getOrganizations-output-21apr26.json`, originally produced from the Røde Kors Organizations API.
 - **Database:** local Supabase stores imported source metadata, branches, activities, and normalized need indicators.
 - **Backend:** `GET /api/planning/areas` joins the normalized tables and returns a planning-friendly shape.
+- **Pipeline observability:** `GET /api/system/data-status` exposes ingest runs, table row counts, source freshness, and readiness checks.
 - **Frontend:** the Next.js App Router page consumes only the API route and renders a Røde Kors design-system dashboard with loading, empty, error, source metadata, mobile layout, and accessible controls.
-- **Deployment:** not deployed in this thread by request. The app is structured for Vercel deployment once Supabase/project environment variables are available.
+- **Deployment:** Vercel and Supabase.
 
 ## Data flow
 
 ```text
 SSB API table 08764
   + local Røde Kors organization JSON
-  -> scripts/import-samfunnspuls-data.mts
+  -> scripts/import-samfunnspuls-data.ts
   -> Supabase tables
+  -> /api/system/data-status
   -> /api/planning/areas
   -> dashboard page
 ```
 
-The importer deduplicates duplicate branch/activity keys from the source JSON before upserting. In the current local import it stores 391 unique branches, 2,375 activities, and 260 municipality need rows for 2024.
+The importer deduplicates duplicate branch/activity keys from the source JSON before upserting. In the `api-getOrganizations-output-21apr26.json` local import it stores 391 unique branches, 2,375 activities, and 260 municipality need rows for 2024.
 
 ## Setup
 
@@ -34,15 +36,15 @@ supabase start
 cp .env.example .env.local
 ```
 
-Set `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` from the `supabase start` output, then run:
+Set both `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_SECRET_KEY` in `.env.local` to the service_role key from the `supabase start` output (locally both use the same JWT value), then run:
 
 ```bash
-npm run data:sync
+npm run data:sync:local
 npm run build
 npm run start
 ```
 
-Open http://localhost:3000.
+Open http://localhost:3000 (or what your devcontainer has configured - typically exposed as port 3000)
 
 Useful checks:
 
@@ -55,6 +57,10 @@ npm run check:a11y -- src/app
 npm run check:agent-context
 ```
 
+Pipeline runbook (empty deployment -> loaded data):
+
+- `docs/data-pipeline-playbook.md`
+
 ## AI use
 
 AI was used to compress discovery, inspect the brief and local starter context, draft the implementation path, generate code, and run verification loops. Product scope, data choice, accessibility expectations, and final tradeoffs were kept explicit in the implementation and verification process.
@@ -63,8 +69,6 @@ AI was used to compress discovery, inspect the brief and local starter context, 
 
 Case app workspace derived from the Next.js starter template and pre-configured with the [Røde Kors Design System](https://norwegianredcross.github.io/DesignSystem/storybook/).
 
-## What's included
-
 - **Next.js 16** (App Router, TypeScript, webpack)
 - **React Compiler** enabled
 - **rk-designsystem** — Røde Kors component library
@@ -72,89 +76,4 @@ Case app workspace derived from the Next.js starter template and pre-configured 
 - **Source Sans 3** font via `next/font`
 - **Devcontainer** — open in VS Code and start coding immediately
 - **AI_DESIGN_SYSTEM_GUIDE.md** — reference guide for AI-assisted development
-- **Repo-scoped skills and rules** — shared agent context with guarded propagation to Claude and Cursor
-
-## Getting started
-
-### With devcontainer (recommended)
-
-1. Clone this repo
-2. Open in VS Code
-3. Click "Reopen in Container" when prompted
-4. Run `npm run dev`
-5. Open http://localhost:3000
-
-### Without devcontainer
-
-```bash
-npm install
-npm run dev
-```
-
-## Important notes
-
-- **Do not** add `padding: 0` or `margin: 0` to `globals.css` — this breaks the design system components
-- Use design tokens (`var(--ds-size-*)`, `var(--ds-color-*)`) instead of hardcoded values
-- Use design system components (`<Button>`, `<Card>`, `<Heading>`, etc.) instead of custom HTML
-- Pages using design system components need the `"use client"` directive
-
-## Collaboration workflow
-
-### Shared instruction layers
-
-- `AGENTS.md` is the cross-agent source of truth
-- `.agents/skills` is the shared skill source
-- `.agents/rules` is the shared rule source for generated Claude and Cursor rules
-- `AI_DESIGN_SYSTEM_GUIDE.md` remains the checked-in reference guide
-
-### Core commands
-
-```bash
-npm run skills:sync
-npm run check:ai
-npm run guide:refresh
-```
-
-### Targeted verification
-
-The local checks accept explicit paths when you want to review one route, component, or practice case without running the whole app:
-
-```bash
-npm run check:designsystem -- src/app
-npm run check:a11y -- src/app
-```
-
-### Practice eval workspace
-
-Create persistent local copies of the template for the design-system review drills under `../.agent-evals/design-system-review`:
-
-```bash
-npm run eval:practice:setup -- --force=true 01-campaign-cta 02-search-results-page 03-support-form-section 04-breadcrumb-content-page
-```
-
-Each generated copy is a standalone local git repo with the broken scenario installed as `src/app/page.tsx`, so you can run Codex CLI, Claude Code, or the local verification scripts against a normal template-shaped workspace.
-
-### Refreshing upstream context
-
-Refresh the local guide, metadata, and upstream manifest from published artifacts:
-
-```bash
-npm run guide:refresh
-```
-
-Or refresh from a local sibling checkout of `DesignSystem`:
-
-```bash
-npm run guide:refresh -- --source=local --designsystem-root=../DesignSystem
-```
-
-The refresh flow writes a drift report to `.artifacts/refresh-rk-context/latest.md` and stops when policy conflicts or tool-specific divergence need review.
-
-`npm run check:ai` also includes a production build so route-level or render-time issues fail early instead of slipping past static checks.
-
-## Resources
-
-- [Storybook](https://norwegianredcross.github.io/DesignSystem/storybook/) — component explorer
-- [Design Tokens CSS](https://norwegianredcross.github.io/design-tokens/theme.css) — all available tokens
-- [AI_DESIGN_SYSTEM_GUIDE.md](./AI_DESIGN_SYSTEM_GUIDE.md) — full setup and usage guide
-- [metadata.json](./metadata.json) — local copy of upstream component metadata after refresh
+- **Repo-scoped skills and rules** (added recently) — shared agent context with guarded propagation to Claude and Cursor

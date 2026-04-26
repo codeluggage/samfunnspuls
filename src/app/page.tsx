@@ -2,78 +2,66 @@
 
 import {
   Alert,
-  Badge,
   Button,
   Card,
   CardBlock,
-  Header,
+  CrossCorner,
+  Field,
   Heading,
   Link,
   Paragraph,
-  Select,
   SkeletonLoader,
-  Table,
+  Suggestion,
   Tag,
 } from "rk-designsystem";
-import { type ChangeEvent, useEffect, useMemo, useState } from "react";
+import { type ComponentProps, useEffect, useMemo, useState } from "react";
+import { SiteHeader } from "./components/site-header";
+import type { AreaProfile, IndicatorSnapshot } from "@/lib/planning";
 import styles from "./page.module.css";
 
-type PlanningSignalLevel =
-  | "high-covered"
-  | "high-limited"
-  | "moderate-covered"
-  | "moderate-limited"
-  | "lower";
-
-type AreaPlan = {
-  regionCode: string;
-  municipality: string;
-  county: string | null;
-  year: string;
-  childrenCount: number | null;
-  lowIncomePercent: number | null;
-  activeBranchesCount: number;
-  matchingBranchesCount: number;
-  topRelevantActivities: Array<{ activityName: string; branchesCount: number }>;
-  branches: Array<{
-    branchId: string;
-    branchName: string;
-    county: string | null;
-    municipality: string | null;
-    relevantActivities: string[];
-    allActivitiesCount: number;
-    email?: string | null;
-    phone?: string | null;
-    web?: string | null;
-  }>;
-  planningSignal: {
-    level: PlanningSignalLevel;
-    title: string;
-    summary: string;
-  };
-  source: {
-    ssbTable: "08764";
-    ssbUpdatedAt: string | null;
-    importedAt: string;
-  };
-};
-
 type ApiResponse = {
-  areas: AreaPlan[];
+  areas: AreaProfile[];
   metadata: {
     generatedAt: string;
     sources: Array<{
       id: string;
       label: string;
       url: string;
-      source_updated_at: string | null;
-      imported_at: string;
+      sourceUpdatedAt: string | null;
+      importedAt: string;
     }>;
   };
 };
 
-export default function Home() {
-  const [areas, setAreas] = useState<AreaPlan[]>([]);
+type AreaSuggestion = { label: string; value: string };
+
+type SuggestionSelectedChange = NonNullable<ComponentProps<typeof Suggestion>["onSelectedChange"]>;
+
+const ACTIVITY_GROUPS: Array<{ label: string; activities: string[] }> = [
+  {
+    label: "Barn og ungdom",
+    activities: [
+      "Barnas Røde Kors",
+      "Ferie for alle",
+      "Leksehjelp",
+      "Digital leksehjelp",
+      "Treffpunkt - Røde Kors Ungdom",
+      "Øvrige aktiviteter - Røde Kors Ungdom",
+      "Møteplass Fellesverkene",
+    ],
+  },
+  {
+    label: "Integrering og språk",
+    activities: ["Flyktningguide", "Norsktrening", "Språkgruppe", "Mentorfamilie"],
+  },
+  {
+    label: "Møteplasser og fellesskap",
+    activities: ["Møteplasser", "Vennefamilie"],
+  },
+];
+
+export default function HomePage() {
+  const [areas, setAreas] = useState<AreaProfile[]>([]);
   const [metadata, setMetadata] = useState<ApiResponse["metadata"] | null>(null);
   const [selectedRegionCode, setSelectedRegionCode] = useState("");
   const [status, setStatus] = useState<"loading" | "ready" | "empty" | "error">("loading");
@@ -96,7 +84,7 @@ export default function Home() {
         const data = payload as ApiResponse;
         setAreas(data.areas);
         setMetadata(data.metadata);
-        setSelectedRegionCode(data.areas[0]?.regionCode ?? "");
+        setSelectedRegionCode(findDefaultArea(data.areas)?.regionCode ?? "");
         setStatus(data.areas.length ? "ready" : "empty");
       } catch (caught) {
         if (!isActive) return;
@@ -116,232 +104,350 @@ export default function Home() {
     () => areas.find((area) => area.regionCode === selectedRegionCode) ?? areas[0],
     [areas, selectedRegionCode],
   );
-  const topAreas = areas.slice(0, 6);
+
+  const areaOptions = useMemo<AreaSuggestion[]>(
+    () =>
+      [...areas]
+        .sort((left, right) => formatAreaName(left).localeCompare(formatAreaName(right), "nb-NO"))
+        .map((area) => ({ label: formatAreaName(area), value: area.regionCode })),
+    [areas],
+  );
+
+  const selectedAreaOption = areaOptions.find((option) => option.value === selectedRegionCode);
+  const topPressureAreas = useMemo(
+    () => areas.filter((area) => area.pressureScore !== null).slice(0, 10),
+    [areas],
+  );
+
+  function handleAreaSuggestionChange(selected: unknown) {
+    if (!selected || Array.isArray(selected) || typeof selected !== "object") return;
+    const option = selected as Partial<AreaSuggestion>;
+    if (typeof option.value === "string") setSelectedRegionCode(option.value);
+  }
 
   return (
     <>
-      <Header
-        data-color="primary"
-        activePage="Aktivitetsradar"
-        navItems={[{ label: "Aktivitetsradar", href: "/" }]}
-        showHeaderExtension
-        showNavItems
-        showMenuButton={false}
-        showSearch={false}
-        showLogin={false}
-        showUser={false}
-        showThemeToggle={false}
-      />
+      <SiteHeader />
 
       <main className={styles.main}>
-        <section className={styles.hero}>
-          <div className={styles.heroText}>
-            <Badge data-color="info">Samfunnspuls case</Badge>
+        <section className={styles.hero} aria-label="Velg sted">
+          <div className={styles.heroDecor} aria-hidden />
+          <CrossCorner
+            data-color="primary-color-red"
+            data-size="md"
+            position="top-left"
+            aria-hidden
+          />
+          <div className={styles.heroInner}>
+            <Tag data-color="primary-color-red">Forstå hva folk i kommunen trenger, og hva vi kan gjøre</Tag>
             <Heading level={1} data-size="xl">
-              Aktivitetsradar for lokale humanitære behov
+              Hva trenger lokalsamfunnet?
             </Heading>
             <Paragraph data-size="lg">
-              Sammenlign barn og unge i lavinntekt med eksisterende Røde Kors-aktiviteter i kommunen.
+              Velg sted for å se oversikt over Røde Kors-tilbud, samt utvikling i barn, befolkning og flytting.
             </Paragraph>
+
+            <div className={styles.picker}>
+              <Field>
+                <label htmlFor="kommune-search" className={styles.pickerLabel}>
+                  Velg kommune
+                </label>
+                <Suggestion
+                  filter
+                  multiple={false}
+                  selected={selectedAreaOption ?? null}
+                  onSelectedChange={handleAreaSuggestionChange as SuggestionSelectedChange}
+                >
+                  <Suggestion.Input
+                    id="kommune-search"
+                    placeholder="Søk etter sted"
+                  />
+                  <Suggestion.Clear />
+                  <Suggestion.List>
+                    <Suggestion.Empty>Ingen kommuner funnet</Suggestion.Empty>
+                    {areaOptions.map((option) => (
+                      <Suggestion.Option key={option.value} label={option.label} value={option.value}>
+                        {option.label}
+                      </Suggestion.Option>
+                    ))}
+                  </Suggestion.List>
+                </Suggestion>
+              </Field>
+              <Paragraph data-size="sm">
+                {areas.length > 0
+                  ? `${areas.length} kommuner sortert etter andel barn i familier med lav inntekt.`
+                  : "Vi har ingen tall å vise akkurat nå."}
+              </Paragraph>
+            </div>
           </div>
-          {metadata ? <SourcePanel metadata={metadata} /> : null}
         </section>
 
         {status === "loading" ? <LoadingState /> : null}
         {status === "error" ? <ErrorState message={error} /> : null}
         {status === "empty" ? <EmptyState /> : null}
         {status === "ready" && selectedArea ? (
-          <section className={styles.dashboard} aria-label="Lokal planleggingsoversikt">
-            <Card data-color="neutral">
-              <CardBlock>
-                <div className={styles.filterBar}>
-                  <div>
-                    <Heading level={2} data-size="md">
-                      Velg kommune
-                    </Heading>
-                    <Paragraph>
-                      {areas.length} kommuner med både SSB-indikator og minst én lokal Røde Kors-forening.
-                    </Paragraph>
-                  </div>
-                  <Select
-                    id="municipality"
-                    name="municipality"
-                    data-size="md"
-                    aria-label="Velg kommune"
-                    value={selectedRegionCode}
-                    onChange={(event: ChangeEvent<HTMLSelectElement>) => setSelectedRegionCode(event.target.value)}
-                  >
-                    {areas.map((area) => (
-                      <option key={area.regionCode} value={area.regionCode}>
-                        {area.municipality}
-                        {area.county ? `, ${area.county}` : ""}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-              </CardBlock>
-            </Card>
-
-            <section className={styles.summaryGrid} aria-label={`Nøkkeltall for ${selectedArea.municipality}`}>
-              <MetricCard
-                label="Barn i lavinntekt"
-                value={formatPercent(selectedArea.lowIncomePercent)}
-                detail={`SSB ${selectedArea.year}, EU-skala 60 prosent`}
-              />
-              <MetricCard
-                label="Barn under 18 år"
-                value={formatNumber(selectedArea.childrenCount)}
-                detail="Privathusholdninger i valgt kommune"
-              />
-              <MetricCard
-                label="Aktive lokalforeninger"
-                value={String(selectedArea.activeBranchesCount)}
-                detail="Fra Røde Kors organisasjonsdata"
-              />
-              <MetricCard
-                label="Relevante aktivitetstreff"
-                value={String(selectedArea.matchingBranchesCount)}
-                detail="Barn, ungdom, møteplasser og integrering"
-              />
-            </section>
-
-            <div className={styles.twoColumn}>
-              <Card data-color="neutral">
-                <CardBlock>
-                  <div className={styles.cardStack}>
-                    <Tag data-color={signalColor(selectedArea.planningSignal.level)}>
-                      {selectedArea.planningSignal.title}
-                    </Tag>
-                    <Heading level={2} data-size="lg">
-                      {selectedArea.municipality}
-                      {selectedArea.county ? `, ${selectedArea.county}` : ""}
-                    </Heading>
-                    <Paragraph>{selectedArea.planningSignal.summary}</Paragraph>
-                    <div className={styles.tagList} aria-label="Relevante aktiviteter">
-                      {selectedArea.topRelevantActivities.length ? (
-                        selectedArea.topRelevantActivities.map((activity) => (
-                          <Badge key={activity.activityName} data-color="neutral">
-                            {activity.activityName}: {activity.branchesCount}
-                          </Badge>
-                        ))
-                      ) : (
-                        <Paragraph>Ingen relevante aktivitetstreff i de valgte kategoriene.</Paragraph>
-                      )}
-                    </div>
-                  </div>
-                </CardBlock>
-              </Card>
-
-              <Card data-color="neutral">
-                <CardBlock>
-                  <div className={styles.cardStack}>
-                    <Heading level={2} data-size="md">
-                      Kommuner med høyest utslag
-                    </Heading>
-                    <div className={styles.rankList}>
-                      {topAreas.map((area) => (
-                        <Button
-                          key={area.regionCode}
-                          variant={area.regionCode === selectedArea.regionCode ? "primary" : "secondary"}
-                          data-size="sm"
-                          onClick={() => setSelectedRegionCode(area.regionCode)}
-                        >
-                          {area.municipality} {formatPercent(area.lowIncomePercent)}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                </CardBlock>
-              </Card>
-            </div>
-
-            <Card data-color="neutral">
-              <CardBlock>
-                <div className={styles.cardStack}>
-                  <Heading level={2} data-size="md">
-                    Lokale foreninger og aktivitetstreff
-                  </Heading>
-                  <div className={styles.tableWrap}>
-                    <Table data-size="sm" zebra hover>
-                      <thead>
-                        <tr>
-                          <th>Forening</th>
-                          <th>Relevante aktiviteter</th>
-                          <th>Kontakt</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {selectedArea.branches.map((branch) => (
-                          <tr key={branch.branchId}>
-                            <td>{branch.branchName}</td>
-                            <td>
-                              {branch.relevantActivities.length
-                                ? branch.relevantActivities.join(", ")
-                                : "Ingen treff i valgte kategorier"}
-                            </td>
-                            <td>
-                              {branch.web ? (
-                                <Link href={branch.web}>Nettside</Link>
-                              ) : branch.email ? (
-                                <Link href={`mailto:${branch.email}`}>E-post</Link>
-                              ) : (
-                                "Ikke oppgitt"
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </div>
-                </div>
-              </CardBlock>
-            </Card>
-          </section>
+          <ProfileView
+            area={selectedArea}
+            topPressureAreas={topPressureAreas}
+            onSelectArea={setSelectedRegionCode}
+          />
         ) : null}
+
+        {metadata ? <SourceFootnote metadata={metadata} /> : null}
       </main>
     </>
   );
 }
 
-function MetricCard({ label, value, detail }: { label: string; value: string; detail: string }) {
+function ProfileView({
+  area,
+  topPressureAreas,
+  onSelectArea,
+}: {
+  area: AreaProfile;
+  topPressureAreas: AreaProfile[];
+  onSelectArea: (regionCode: string) => void;
+}) {
   return (
-    <Card data-color="neutral">
-      <CardBlock>
-        <div className={styles.metric}>
-          <span>{label}</span>
-          <strong>{value}</strong>
-          <Paragraph data-size="sm">{detail}</Paragraph>
+    <article className={styles.profile} aria-label={`Humanitær profil for ${area.municipality}`}>
+      <header className={styles.profileHeader}>
+        <div className={styles.profileHeaderText}>
+          <div className={styles.tagRow}>
+            <Tag data-color={pressureColor(area.pressureBand)}>{pressureLabel(area.pressureBand)}</Tag>
+            {area.county ? <Tag data-color="neutral">{area.county}</Tag> : null}
+            {area.population !== null ? (
+              <Tag data-color="neutral">{formatNumber(area.population)} innbyggere</Tag>
+            ) : null}
+          </div>
+          <Heading level={2} data-size="xl">
+            {area.municipality}
+          </Heading>
+          <Paragraph data-size="lg">{area.narrative}</Paragraph>
         </div>
-      </CardBlock>
-    </Card>
+      </header>
+
+      <section className={styles.indicatorStrip} aria-label="Indikatorer">
+        {area.indicators.map((snapshot) => (
+          <IndicatorRow key={snapshot.indicator.id} snapshot={snapshot} />
+        ))}
+      </section>
+
+      <div className={styles.twoColumn}>
+        <Card data-color="neutral">
+          <CardBlock>
+            <div className={styles.cardStack}>
+              <Heading level={3} data-size="md">
+                Røde Kors-tilbud i {area.municipality}
+              </Heading>
+              <Paragraph data-size="sm">
+                {area.activeBranchesCount === 0
+                  ? "Ingen aktive lokalforeninger registrert."
+                  : `${area.activeBranchesCount} aktive lokalforeninger. ${area.matchingBranchesCount} har tilbud innen fokusområdene.`}
+              </Paragraph>
+              <ActivityCoverageList area={area} />
+              {area.branches.length ? (
+                <ul className={styles.branchList}>
+                  {area.branches.slice(0, 6).map((branch) => (
+                    <li key={branch.branchId}>
+                      <span className={styles.branchName}>{branch.branchName}</span>
+                      <span className={styles.branchMeta}>
+                        {branch.relevantActivities.length
+                          ? branch.relevantActivities.join(", ")
+                          : "Ingen tilbud funnet for fokusområdene"}
+                      </span>
+                      {branch.web ? (
+                        <Link href={branch.web} data-size="sm">
+                          Nettside
+                        </Link>
+                      ) : branch.email ? (
+                        <Link href={`mailto:${branch.email}`} data-size="sm">
+                          E-post
+                        </Link>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          </CardBlock>
+        </Card>
+
+        <Card data-color="neutral">
+          <CardBlock>
+            <div className={styles.cardStack}>
+              <Heading level={3} data-size="md">
+                Kommuner med høyest andel barn i familier med lav inntekt
+              </Heading>
+              <Paragraph data-size="sm">
+                Klikk på en kommune i listen for å se mer.
+              </Paragraph>
+              <PressureRanking
+                areas={topPressureAreas}
+                selectedRegionCode={area.regionCode}
+                onSelect={onSelectArea}
+              />
+              <Paragraph data-size="sm">
+                {area.regionCode &&
+                topPressureAreas.some((entry) => entry.regionCode === area.regionCode)
+                  ? `${area.municipality} er i de 10 høyest målte.`
+                  : `${area.municipality} er ikke blant de 10 høyest målte. Se listen for nabokommuner.`}
+              </Paragraph>
+              <RankInDataset area={area} />
+            </div>
+          </CardBlock>
+        </Card>
+      </div>
+    </article>
   );
 }
 
-function SourcePanel({ metadata }: { metadata: ApiResponse["metadata"] }) {
-  const ssbSource = metadata.sources.find((source) => source.id === "ssb-08764");
-  const orgSource = metadata.sources.find((source) => source.id === "red-cross-organizations");
+function IndicatorRow({ snapshot }: { snapshot: IndicatorSnapshot }) {
+  const { indicator, value, nationalAverage, comparison } = snapshot;
+  const trend = trendFor(snapshot);
 
   return (
-    <Card data-color="neutral">
-      <CardBlock>
-        <div className={styles.sourcePanel}>
-          <Heading level={2} data-size="sm">
-            Datagrunnlag
-          </Heading>
-          <Paragraph data-size="sm">SSB tabell 08764 oppdatert {formatDate(ssbSource?.source_updated_at)}.</Paragraph>
+    <div className={styles.indicatorRow}>
+      <div className={styles.indicatorMain}>
+        <p className={styles.indicatorValue}>{formatValue(value, indicator.unit)}</p>
+        <Paragraph data-size="sm">
+          <span className={styles.indicatorLabel}>{indicator.shortLabel}</span>
+          <span className={styles.indicatorPeriod}>{snapshot.period ? `· ${snapshot.period}` : null}</span>
+        </Paragraph>
+      </div>
+      <div className={styles.indicatorMeta}>
+        {trend ? (
+          <Tag data-color={trend.color}>{trend.label}</Tag>
+        ) : null}
+        {nationalAverage !== null ? (
           <Paragraph data-size="sm">
-            Organisasjonsdata fra Røde Kors API-uttak {formatDate(orgSource?.source_updated_at)}.
+            Snitt for Norge: {formatValue(nationalAverage, indicator.unit)}
           </Paragraph>
-          <Paragraph data-size="sm">Sist synkronisert {formatDate(ssbSource?.imported_at)}.</Paragraph>
+        ) : null}
+        {snapshot.rank !== null && snapshot.totalRanked > 0 && comparison !== "no-comparison" ? (
+          <Paragraph data-size="sm">
+            Plassering: {snapshot.rank} av {snapshot.totalRanked}
+          </Paragraph>
+        ) : null}
+      </div>
+      <p className={styles.indicatorDescription}>{indicator.description}</p>
+    </div>
+  );
+}
+
+function ActivityCoverageList({ area }: { area: AreaProfile }) {
+  if (area.matchingBranchesCount === 0) {
+    return (
+      <Alert data-color="warning">
+        <Heading level={4} data-size="xs">
+          Ingen registrerte tilbud for fokusområdene
+        </Heading>
+        <Paragraph>
+          I {area.municipality} finner vi ingen registrerte Røde Kors-tilbud innen barn og unge, integrering eller møteplasser. Det kan være aktuelt å samarbeide med nabokommuner.
+        </Paragraph>
+      </Alert>
+    );
+  }
+
+  const coverageByGroup = ACTIVITY_GROUPS.map((group) => {
+    const matches = area.topRelevantActivities.filter((activity) =>
+      group.activities.includes(activity.activityName),
+    );
+    return { ...group, matches };
+  });
+
+  return (
+    <dl className={styles.activityList}>
+      {coverageByGroup.map((group) => (
+        <div key={group.label}>
+          <dt>{group.label}</dt>
+          <dd>
+            {group.matches.length === 0 ? (
+              <span className={styles.activityMissing}>Ingen tilbud i denne kategorien</span>
+            ) : (
+              group.matches
+                .map((match) => `${match.activityName} (${match.branchesCount})`)
+                .join(", ")
+            )}
+          </dd>
         </div>
-      </CardBlock>
-    </Card>
+      ))}
+    </dl>
+  );
+}
+
+function PressureRanking({
+  areas,
+  selectedRegionCode,
+  onSelect,
+}: {
+  areas: AreaProfile[];
+  selectedRegionCode: string;
+  onSelect: (regionCode: string) => void;
+}) {
+  return (
+    <ol className={styles.rankList}>
+      {areas.map((area, index) => {
+        const isSelected = area.regionCode === selectedRegionCode;
+        return (
+          <li key={area.regionCode} className={isSelected ? styles.rankRowSelected : styles.rankRow}>
+            <Button
+              variant={isSelected ? "primary" : "tertiary"}
+              data-size="sm"
+              onClick={() => onSelect(area.regionCode)}
+              aria-pressed={isSelected}
+            >
+              <span className={styles.rankIndex} aria-hidden>
+                {String(index + 1).padStart(2, " ")}.
+              </span>
+              {area.municipality}
+              <span className={styles.rankValue} aria-hidden>
+                {formatValue(area.pressureScore, "percent")}
+              </span>
+            </Button>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function RankInDataset({ area }: { area: AreaProfile }) {
+  const lowIncome = area.indicators.find((s) => s.indicator.id === "low-income-children");
+  if (!lowIncome || lowIncome.rank === null || lowIncome.totalRanked === 0) return null;
+
+  return (
+    <Paragraph data-size="sm">
+      {area.municipality} er nummer {lowIncome.rank} på listen.
+    </Paragraph>
+  );
+}
+
+function SourceFootnote({ metadata }: { metadata: ApiResponse["metadata"] }) {
+  return (
+    <footer className={styles.sourceFootnote} aria-label="Kilder">
+      <Heading level={2} data-size="xs">
+        Kilder
+      </Heading>
+      <ul className={styles.sourceList}>
+        {metadata.sources.map((source) => (
+          <li key={source.id}>
+            <Link href={source.url}>{source.label}</Link>
+            <span className={styles.sourceMeta}>
+              Oppdatert hos kilden: {formatDate(source.sourceUpdatedAt)}. Hentet inn: {formatDate(source.importedAt)}.
+            </span>
+          </li>
+        ))}
+      </ul>
+      <Paragraph data-size="sm">
+        <Link href="/om-tallene">Les mer om tallene og datakildene</Link>
+      </Paragraph>
+    </footer>
   );
 }
 
 function LoadingState() {
   return (
-    <section className={styles.summaryGrid} aria-label="Laster planleggingsdata">
+    <section className={styles.loadingGrid} aria-label="Laster planleggingsdata">
       {Array.from({ length: 4 }).map((_, index) => (
         <Card key={index} data-color="neutral">
           <CardBlock>
@@ -357,7 +463,7 @@ function ErrorState({ message }: { message: string }) {
   return (
     <Alert data-color="danger">
       <Heading level={2} data-size="sm">
-        Data kunne ikke hentes
+        Ingen tall lastet inn
       </Heading>
       <Paragraph>{message}</Paragraph>
     </Alert>
@@ -368,19 +474,69 @@ function EmptyState() {
   return (
     <Alert data-color="warning">
       <Heading level={2} data-size="sm">
-        Ingen planleggingsdata
+        Ingen tall tilgjengelig
       </Heading>
-      <Paragraph>Kjør lokal Supabase og importer data før dashboardet åpnes.</Paragraph>
+      <Paragraph>
+        Vi mangler datagrunnlag for denne visningen.
+      </Paragraph>
     </Alert>
   );
 }
 
-function formatPercent(value: number | null) {
-  return value === null ? "Ikke oppgitt" : `${value.toLocaleString("nb-NO", { maximumFractionDigits: 1 })} %`;
+function pressureLabel(band: AreaProfile["pressureBand"]) {
+  if (band === "high") return "Stort behov";
+  if (band === "moderate") return "Middels behov";
+  if (band === "lower") return "Mindre behov";
+  return "For lite data";
 }
 
-function formatNumber(value: number | null) {
-  return value === null ? "Ikke oppgitt" : value.toLocaleString("nb-NO");
+function pressureColor(band: AreaProfile["pressureBand"]):
+  | "primary-color-red"
+  | "warning"
+  | "info"
+  | "neutral" {
+  if (band === "high") return "primary-color-red";
+  if (band === "moderate") return "warning";
+  if (band === "lower") return "info";
+  return "neutral";
+}
+
+function trendFor(snapshot: IndicatorSnapshot): { label: string; color: "primary-color-red" | "warning" | "info" | "neutral" | "success" } | null {
+  if (snapshot.value === null || snapshot.nationalAverage === null) return null;
+  const direction = snapshot.indicator.direction;
+  const comparison = snapshot.comparison;
+
+  if (direction === "higher-is-pressure") {
+    if (comparison === "above-average") return { label: "Over snittet", color: "primary-color-red" };
+    if (comparison === "below-average") return { label: "Under snittet", color: "success" };
+    return { label: "På linje med snittet", color: "neutral" };
+  }
+
+  if (direction === "lower-is-pressure") {
+    if (comparison === "below-average") return { label: "Under snittet", color: "primary-color-red" };
+    if (comparison === "above-average") return { label: "Over snittet", color: "success" };
+    return { label: "På linje med snittet", color: "neutral" };
+  }
+
+  if (comparison === "above-average") return { label: "Over snittet", color: "info" };
+  if (comparison === "below-average") return { label: "Under snittet", color: "info" };
+  return { label: "På linje med snittet", color: "neutral" };
+}
+
+function formatValue(value: number | null, unit: "percent" | "count" | "per-mille"): string {
+  if (value === null) return "Ikke oppgitt";
+  if (unit === "percent") {
+    return `${value.toLocaleString("nb-NO", { maximumFractionDigits: 1 })} %`;
+  }
+  if (unit === "per-mille") {
+    const sign = value > 0 ? "+" : "";
+    return `${sign}${value.toLocaleString("nb-NO", { maximumFractionDigits: 1 })} ‰`;
+  }
+  return value.toLocaleString("nb-NO", { maximumFractionDigits: 0 });
+}
+
+function formatNumber(value: number): string {
+  return value.toLocaleString("nb-NO");
 }
 
 function formatDate(value: string | null | undefined) {
@@ -388,10 +544,10 @@ function formatDate(value: string | null | undefined) {
   return new Intl.DateTimeFormat("nb-NO", { dateStyle: "medium" }).format(new Date(value));
 }
 
-function signalColor(level: PlanningSignalLevel) {
-  if (level === "high-covered") return "success";
-  if (level === "high-limited") return "warning";
-  if (level === "moderate-covered") return "info";
-  if (level === "moderate-limited") return "warning";
-  return "neutral";
+function formatAreaName(area: AreaProfile) {
+  return `${area.municipality}${area.county ? `, ${area.county}` : ""}`;
+}
+
+function findDefaultArea(areas: AreaProfile[]) {
+  return areas.find((area) => area.municipality === "Oslo") ?? areas[0];
 }

@@ -61,6 +61,8 @@ async function main() {
     }
   }
 
+  mirrorBrandTokens();
+
   const guide = fs.readFileSync(path.join(repoRoot, "AI_DESIGN_SYSTEM_GUIDE.md"), "utf8");
   const manifest = JSON.parse(
     fs.readFileSync(path.join(repoRoot, ".agents", "context", "upstream", "ai-context.manifest.json"), "utf8")
@@ -94,6 +96,52 @@ async function main() {
   }
 
   console.log("Refresh completed without blocking drift.");
+}
+
+function mirrorBrandTokens() {
+  const brandSkillTokens = path.join(
+    repoRoot,
+    ".agents",
+    "skills",
+    "rk-brand-design",
+    "tokens",
+    "theme.css",
+  );
+  const installedThemePath = path.join(
+    repoRoot,
+    "node_modules",
+    "rk-design-tokens",
+    "design-tokens-build",
+    "theme.css",
+  );
+
+  if (!fs.existsSync(installedThemePath)) {
+    report.followUpWork.push(
+      "rk-design-tokens is not installed in node_modules — skipping the rk-brand-design tokens mirror.",
+    );
+    return;
+  }
+
+  if (!fs.existsSync(path.dirname(brandSkillTokens))) {
+    // Skill not present in this project — nothing to mirror.
+    return;
+  }
+
+  const installed = fs.readFileSync(installedThemePath, "utf8");
+  const previous = fs.existsSync(brandSkillTokens) ? fs.readFileSync(brandSkillTokens, "utf8") : null;
+
+  if (previous === installed) {
+    report.safeRefreshes.push("rk-brand-design tokens/theme.css already matched the installed rk-design-tokens.");
+    return;
+  }
+
+  write(brandSkillTokens, installed);
+  report.safeRefreshes.push(
+    `rk-brand-design tokens/theme.css mirrored from ${relativeToRepo(installedThemePath)}.`,
+  );
+  report.followUpWork.push(
+    "rk-brand-design mocks/colors_and_type.css is hand-curated and was NOT regenerated — review whether the curated subset still matches the new theme.",
+  );
 }
 
 function analyzeGuide(guide) {

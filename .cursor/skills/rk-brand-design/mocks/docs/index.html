@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<title>Røde Kors Designsystem — Docs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; }
+.dx-header { position: sticky; top: 0; z-index: 10; background: #fff; border-bottom: 1px solid var(--ds-color-neutral-border-subtle); }
+.dx-header-inner { max-width: 1280px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 24px; }
+.dx-logo { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.dx-logo img { height: 32px; }
+.dx-logo-text { font-size: 18px; font-weight: 500; color: var(--ds-color-neutral-text-default); }
+.dx-nav { display: flex; gap: 4px; flex: 1; }
+.dx-nav button { font-family: var(--ds-font-family); font-size: 16px; font-weight: 500; color: var(--ds-color-neutral-text-default);
+  background: none; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
+.dx-nav button:hover { background: var(--ds-color-neutral-surface-tinted); }
+.dx-nav button.is-active { color: var(--ds-color-primary-color-red-text-subtle); }
+.dx-search { display: flex; align-items: center; background: var(--ds-color-neutral-background-tinted);
+  border-radius: 4px; padding: 6px 10px; gap: 8px; min-width: 240px; }
+.dx-search input { background: none; border: none; outline: none; font-family: inherit; font-size: 14px; flex: 1; }
+.dx-kbd { font-family: var(--ds-font-family-mono); font-size: 11px; color: var(--ds-color-neutral-text-subtle);
+  background: #fff; padding: 2px 6px; border-radius: 2px; border: 1px solid var(--ds-color-neutral-border-subtle); }
+
+/* Hero */
+.dx-hero { padding: 80px 24px 60px; }
+.dx-hero-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+.dx-tag { display: inline-block; font-size: 14px; font-weight: 500; padding: 4px 12px; border-radius: 9999px;
+  background: var(--ds-color-neutral-background-tinted); color: var(--ds-color-neutral-text-default); margin-bottom: 16px; white-space: nowrap; }
+.dx-tag-sm { white-space: nowrap; }
+.dx-hero h1 { font-size: 60px; font-weight: 500; line-height: 1.1; letter-spacing: -0.01em; margin: 0 0 16px; text-wrap: balance; }
+.dx-hero-lead { font-size: 21px; color: var(--ds-color-neutral-text-subtle); line-height: 1.5; margin: 0 0 32px; }
+.dx-hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.dx-btn { font-family: inherit; font-weight: 500; border-radius: 4px; cursor: pointer; line-height: 1.3; border: 1px solid transparent; white-space: nowrap; }
+.dx-btn-lg { font-size: 21px; padding: 14px 28px; }
+.dx-btn-md { font-size: 18px; padding: 10px 22px; }
+.dx-btn-primary { background: var(--ds-color-primary-color-red-base-default); color: #fff; }
+.dx-btn-primary:hover { background: var(--ds-color-primary-color-red-base-hover); }
+.dx-btn-secondary { background: #fff; color: var(--ds-color-neutral-base-default); border-color: var(--ds-color-neutral-base-default); }
+.dx-btn-tertiary { background: transparent; color: var(--ds-color-neutral-base-default); }
+.dx-btn-tertiary:hover { background: var(--ds-color-neutral-surface-tinted); }
+
+/* Floating grid visual */
+.dx-visual { position: relative; height: 460px; overflow: hidden; }
+.dx-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; height: 100%; }
+.dx-col { display: flex; flex-direction: column; gap: 14px; animation: float 8s var(--ds-ease-standard) infinite alternate; }
+.dx-col.offset { animation-delay: -1.5s; transform: translateY(30px); }
+.dx-col.late { animation-delay: -0.8s; }
+@keyframes float { from { transform: translateY(0); } to { transform: translateY(-20px); } }
+.dx-vc { background: #fff; border: 1px solid var(--ds-color-neutral-border-subtle); border-radius: 8px;
+  padding: 14px; box-shadow: var(--ds-shadow-xs); }
+.dx-vc.tinted { background: var(--ds-color-primary-color-red-background-tinted); border-color: var(--ds-color-primary-color-red-border-subtle); }
+.dx-vc.accent { border-left: 3px solid var(--ds-color-primary-color-red-base-default); }
+.dx-vc h4 { font-size: 14px; font-weight: 500; margin: 0 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dx-vc p { font-size: 13px; margin: 0; color: var(--ds-color-neutral-text-subtle); }
+.dx-vc, .dx-vc * { min-width: 0; }
+.dx-row { display: flex; align-items: center; gap: 8px; }
+.dx-avatar { width: 32px; height: 32px; border-radius: 9999px; background: var(--ds-color-neutral-base-default);
+  color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; }
+.dx-prog { height: 6px; background: var(--ds-color-neutral-background-tinted); border-radius: 9999px; overflow: hidden; margin-top: 8px; }
+.dx-prog-fill { height: 100%; width: 64%; background: var(--ds-color-primary-color-red-base-default); }
+.dx-tag-sm { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 9999px; font-weight: 500; }
+.dx-tag-success { background: var(--ds-color-success-surface-tinted); color: var(--ds-color-success-text-default); }
+.dx-tag-danger { background: var(--ds-color-danger-surface-tinted); color: var(--ds-color-danger-text-default); }
+.dx-vc .dx-btn { width: 100%; }
+.dx-vc-row { display: flex; gap: 6px; }
+
+/* Bento */
+.dx-section { max-width: 1280px; margin: 0 auto; padding: 60px 24px; }
+.dx-section h2 { font-size: 36px; font-weight: 500; margin: 0 0 24px; letter-spacing: -0.005em; }
+.dx-bento { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.dx-bento-item { background: #fff; border: 1px solid var(--ds-color-neutral-border-subtle); border-radius: 12px;
+  padding: 28px; cursor: pointer; transition: box-shadow 160ms; min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; }
+.dx-bento-item:hover { box-shadow: var(--ds-shadow-sm); }
+.dx-bento-head { display: flex; justify-content: space-between; align-items: center; }
+.dx-icon-bg { width: 56px; height: 56px; background: var(--ds-color-primary-color-red-background-tinted);
+  color: var(--ds-color-primary-color-red-base-default); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.dx-bento-item h3 { font-size: 24px; font-weight: 500; margin: 0 0 6px; }
+.dx-bento-item p { font-size: 16px; color: var(--ds-color-neutral-text-subtle); margin: 0; line-height: 1.5; }
+
+/* Values strip */
+.dx-values { background: #181818; color: #ececec; padding: 60px 24px; }
+.dx-values-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.dx-value h3 { font-size: 21px; font-weight: 500; margin: 0 0 8px; color: #fff; }
+.dx-value p { font-size: 16px; color: #a8a8a8; line-height: 1.5; margin: 0 0 16px; }
+.dx-value-icon { width: 48px; height: 48px; color: var(--ds-color-primary-color-red-base-hover);
+  margin-bottom: 16px; display: flex; align-items: center; justify-content: center; }
+.dx-value-icon svg { width: 100%; height: 100%; }
+.dx-link { background: none; border: none; color: var(--ds-color-primary-color-red-base-hover);
+  font-family: inherit; font-size: 16px; font-weight: 500; cursor: pointer; padding: 0; display: inline-flex; align-items: center; gap: 6px; }
+.dx-link:hover { color: #fff; }
+
+/* Icon helpers (lucide-style) */
+.icon { width: 24px; height: 24px; display: inline-block; vertical-align: middle; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body data-screen-label="docs — landing">
+<div id="root"></div>
+<script type="text/babel">
+const Icon = ({ d }) => <svg className="icon" viewBox="0 0 24 24"><path d={d}/></svg>;
+// Simple lucide-style icon paths
+const I = {
+  comp: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
+  palette: "M12 22a10 10 0 1 1 0-20 10 10 0 0 1 5 18 1 1 0 0 1-1.4-.2 2 2 0 0 0-3.6 1.2c0 .6.4 1-.0 1zM6 11a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM10 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM14 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM18 11a1 1 0 1 0 0-2 1 1 0 0 0 0 2z",
+  code: "M8 4l-6 8 6 8M16 4l6 8-6 8",
+  arrow: "M5 12h14M13 5l7 7-7 7",
+  wheel: "M11 14a4 4 0 1 0 4 4M11 14V4l5 4M19 19l-3-5h-3M7 19a4 4 0 0 1 4-5",
+  bolt: "M13 2L4 14h7l-1 8 9-12h-7z",
+  search: "M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16zM21 21l-4.3-4.3"
+};
+
+function App() {
+  const [page, setPage] = React.useState('home');
+  const nav = ['home','components','design','code','tokens'];
+  const labels = { home:'Hjem', components:'Komponenter', design:'Design', code:'Kode', tokens:'Tokens' };
+
+  return (
+    <>
+      <header className="dx-header">
+        <div className="dx-header-inner">
+          <a className="dx-logo" href="#">
+            <img src="../../assets/red-cross-logo.svg" alt="Røde Kors" />
+            <span className="dx-logo-text">Designsystem</span>
+          </a>
+          <nav className="dx-nav">
+            {nav.map(n => (
+              <button key={n} className={page === n ? 'is-active' : ''} onClick={() => setPage(n)}>{labels[n]}</button>
+            ))}
+          </nav>
+          <div className="dx-search">
+            <Icon d={I.search} />
+            <input placeholder="Søk i komponenter…" />
+            <span className="dx-kbd">⌘K</span>
+          </div>
+        </div>
+      </header>
+
+      <section className="dx-hero">
+        <div className="dx-hero-inner">
+          <div>
+            <span className="dx-tag">v1.1 · Open Source</span>
+            <h1>Et felles språk for alt vi lager</h1>
+            <p className="dx-hero-lead">
+              Komponenter, tokens og retningslinjer som hjelper Røde Kors å bygge
+              tilgjengelige, gjenkjennelige og effektive grensesnitt.
+            </p>
+            <div className="dx-hero-actions">
+              <button className="dx-btn dx-btn-primary dx-btn-lg" onClick={() => setPage('components')}>Søk i komponenter</button>
+              <button className="dx-btn dx-btn-secondary dx-btn-lg">GitHub</button>
+            </div>
+          </div>
+          <div className="dx-visual">
+            <div className="dx-grid">
+              <div className="dx-col">
+                <div className="dx-vc tinted">
+                  <h4>Profil</h4>
+                  <div className="dx-row" style={{marginTop:8}}>
+                    <div className="dx-avatar">MH</div>
+                    <div>
+                      <div style={{fontSize:13,fontWeight:500}}>Marit Hansen</div>
+                      <div style={{fontSize:12,color:'var(--ds-color-neutral-text-subtle)'}}>Frivillig</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="dx-vc"><button className="dx-btn dx-btn-primary dx-btn-md">Lagre</button></div>
+                <div className="dx-vc">
+                  <div className="dx-vc-row">
+                    <span className="dx-tag-sm dx-tag-success">Godkjent</span>
+                    <span className="dx-tag-sm dx-tag-danger">Avvist</span>
+                  </div>
+                </div>
+              </div>
+              <div className="dx-col offset">
+                <div className="dx-vc accent">
+                  <h4>Viktig melding</h4>
+                  <p>Oppdaterte retningslinjer for frivillige.</p>
+                </div>
+                <div className="dx-vc">
+                  <div className="dx-row" style={{justifyContent:'space-between'}}>
+                    <span style={{fontSize:14,fontWeight:500}}>Mørk modus</span>
+                    <span style={{width:32,height:18,background:'var(--ds-color-primary-color-red-base-default)',borderRadius:9999,position:'relative'}}>
+                      <span style={{position:'absolute',right:2,top:2,width:14,height:14,background:'#fff',borderRadius:9999}}></span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="dx-col late">
+                <div className="dx-vc">
+                  <div style={{display:'flex',gap:6}}>
+                    <span className="dx-tag-sm" style={{background:'#fae4e2',color:'#57110c'}}>Alle</span>
+                    <span className="dx-tag-sm" style={{background:'#f3f3f3',color:'#2b2b2b'}}>Aktive</span>
+                  </div>
+                </div>
+                <div className="dx-vc tinted">
+                  <h4>Status</h4>
+                  <div className="dx-prog"><div className="dx-prog-fill"></div></div>
+                </div>
+                <div className="dx-vc">
+                  <button className="dx-btn dx-btn-tertiary dx-btn-md">Varsler (5)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="dx-section">
+        <h2>Utforsk systemet</h2>
+        <div className="dx-bento">
+          <div className="dx-bento-item" onClick={() => setPage('components')}>
+            <div className="dx-bento-head">
+              <div className="dx-icon-bg"><Icon d={I.comp}/></div>
+              <Icon d={I.arrow}/>
+            </div>
+            <div>
+              <h3>Komponenter</h3>
+              <p>Knapper, skjemafelt, navigasjon og alt annet du trenger for å bygge produktet.</p>
+            </div>
+          </div>
+          <div className="dx-bento-item" onClick={() => setPage('design')}>
+            <div className="dx-bento-head">
+              <div className="dx-icon-bg"><Icon d={I.palette}/></div>
+              <Icon d={I.arrow}/>
+            </div>
+            <div>
+              <h3>Design</h3>
+              <p>Farger, typografi, ikoner og prinsipper for tilgjengelig design.</p>
+            </div>
+          </div>
+          <div className="dx-bento-item" onClick={() => setPage('code')}>
+            <div className="dx-bento-head">
+              <div className="dx-icon-bg"><Icon d={I.code}/></div>
+              <Icon d={I.arrow}/>
+            </div>
+            <div>
+              <h3>Kode</h3>
+              <p>Installasjon, oppsett og kodeeksempler for React.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="dx-values" data-color-scheme="dark">
+        <div className="dx-values-inner">
+          <div className="dx-value">
+            <div className="dx-value-icon"><Icon d={I.wheel}/></div>
+            <h3>Universell utforming</h3>
+            <p>Tilgjengelighet er ikke et tillegg — det er kjernen. Komponentene følger WCAG 2.2 AA og gir gode tastaturopplevelser fra dag én.</p>
+            <button className="dx-link">Les retningslinjer <Icon d={I.arrow}/></button>
+          </div>
+          <div className="dx-value">
+            <div className="dx-value-icon"><Icon d={I.palette}/></div>
+            <h3>Konsistent merkevare</h3>
+            <p>Røde Kors‑rødt, Source Sans og det L‑formede kors‑elementet — slik at alt vi lager kjennes igjen umiddelbart.</p>
+            <button className="dx-link">Se farger <Icon d={I.arrow}/></button>
+          </div>
+          <div className="dx-value">
+            <div className="dx-value-icon"><Icon d={I.bolt}/></div>
+            <h3>Effektiv utvikling</h3>
+            <p>Ferdige komponenter, dokumenterte mønstre og tokens som lar team bygge raskt uten å finne opp hjulet.</p>
+            <button className="dx-link">Utforsk komponenter <Icon d={I.arrow}/></button>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
