@@ -535,7 +535,7 @@ function formatValue(value: number | null, unit: "percent" | "count" | "per-mill
     const sign = value > 0 ? "+" : "";
     return `${sign}${value.toLocaleString("nb-NO", { maximumFractionDigits: 1 })} ‰`;
   }
-  return value.toLocaleString("nb-NO");
+  return value.toLocaleString("nb-NO", { maximumFractionDigits: 0 });
 }
 
 function formatNumber(value: number): string {
@@ -554,4 +554,3 @@ function formatAreaName(area: AreaProfile) {
 function findDefaultArea(areas: AreaProfile[]) {
   return areas.find((area) => area.municipality === "Oslo") ?? areas[0];
 }
-
