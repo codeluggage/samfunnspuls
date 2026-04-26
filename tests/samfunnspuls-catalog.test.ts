@@ -15,7 +15,7 @@ test("catalog entries have required domain fields and unique slugs", () => {
 
   for (const entry of SAMFUNNSPULS_CATALOG) {
     assert.ok(entry.slug, "slug is required");
-    assert.ok(entry.path.startsWith("/utforsk-data/"), `${entry.slug} path should be rebuilt app path`);
+    assert.ok(entry.path.startsWith("/om-tallene/"), `${entry.slug} path should be rebuilt app path`);
     assert.ok(entry.title, `${entry.slug} title is required`);
     assert.ok(entry.category, `${entry.slug} category is required`);
     assert.ok(entry.source, `${entry.slug} source is required`);

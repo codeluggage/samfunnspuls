@@ -32,7 +32,7 @@ test("om-tallene filters use visible labels for browser accessibility checks", (
   assert.match(source, /<label htmlFor="catalog-category">Kategori<\/label>/);
   assert.match(source, /<label htmlFor="catalog-source">Kilde<\/label>/);
   assert.match(source, /<label htmlFor="catalog-value-type">Verditype<\/label>/);
-  assert.match(source, /<label htmlFor="catalog-status">Datastatus<\/label>/);
+  assert.match(source, /<label htmlFor="catalog-status">Status for datakilden<\/label>/);
   assert.doesNotMatch(source, /aria-label="Filtrer på/);
 });
 
@@ -65,7 +65,7 @@ test("home page surfaces a kommune picker as the primary entry point", () => {
   assert.match(source, /findDefaultArea\(data\.areas\)/);
   assert.match(source, /municipality === "Oslo"/);
   assert.doesNotMatch(source, /Samfunnspuls case/);
-  assert.match(source, /Hva trenger lokalsamfunnet ditt/);
+  assert.match(source, /Hva trenger lokalsamfunnet\?/);
 });
 
 test("site header exposes global data search routed to /om-tallene", () => {

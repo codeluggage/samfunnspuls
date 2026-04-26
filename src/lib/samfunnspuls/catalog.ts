@@ -63,7 +63,7 @@ const BRREG = "Brønnøysundregistrene";
 export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   {
     slug: "aldersgrupper_bosted",
-    path: "/utforsk-data/barn-og-unge/aldersgrupper_bosted",
+    path: "/om-tallene/barn-og-unge/aldersgrupper_bosted",
     title: "Antall barn og unge under 19 år, etter aldersgruppe og bosted",
     category: "Barn og unge",
     summary: "Viser hvor mange barn og unge som bor i et område, fordelt på aldersgrupper og bosted.",
@@ -78,7 +78,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "barn-og-unge-som-bor-trangt-romslig-uoppgitt",
-    path: "/utforsk-data/barn-og-unge/barn-og-unge-som-bor-trangt-romslig-uoppgitt",
+    path: "/om-tallene/barn-og-unge/barn-og-unge-som-bor-trangt-romslig-uoppgitt",
     title: "Barn og unge som bor trangt/romslig/uoppgitt",
     category: "Barn og unge",
     summary: "Beskriver boforhold for barn og unge med kategorier for trangt, romslig og uoppgitt bolig.",
@@ -93,7 +93,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "mobbing-pa-skolen",
-    path: "/utforsk-data/barn-og-unge/mobbing-pa-skolen",
+    path: "/om-tallene/barn-og-unge/mobbing-pa-skolen",
     title: "Andel elever på 7. og 10. trinn som har blitt mobbet",
     category: "Barn og unge",
     summary: "Viser andel elever i grunnskolen som oppgir at de har blitt mobbet.",
@@ -108,7 +108,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "mobbing-pa-skolen-vg1",
-    path: "/utforsk-data/barn-og-unge/mobbing-pa-skolen-vg1",
+    path: "/om-tallene/barn-og-unge/mobbing-pa-skolen-vg1",
     title: "Andel elever på Vg1 som har blitt mobbet",
     category: "Barn og unge",
     summary: "Viser andel elever på Vg1 som oppgir at de har blitt mobbet.",
@@ -122,7 +122,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "stotte-hjemmefra-til-skolearbeidet",
-    path: "/utforsk-data/barn-og-unge/stotte-hjemmefra-til-skolearbeidet",
+    path: "/om-tallene/barn-og-unge/stotte-hjemmefra-til-skolearbeidet",
     title: "Støtte hjemmefra til skolearbeidet - grunnskolen",
     category: "Barn og unge",
     summary: "Måler elevers opplevelse av støtte hjemmefra til skolearbeid i grunnskolen.",
@@ -136,7 +136,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "stotte-hjemmefra-til-skolearbeidet-1",
-    path: "/utforsk-data/barn-og-unge/stotte-hjemmefra-til-skolearbeidet-1",
+    path: "/om-tallene/barn-og-unge/stotte-hjemmefra-til-skolearbeidet-1",
     title: "Støtte hjemmefra til skolearbeidet - Vg1",
     category: "Barn og unge",
     summary: "Måler elevers opplevelse av støtte hjemmefra til skolearbeid på Vg1.",
@@ -150,7 +150,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "registrert-fravaer-i-grunnskolen-10-trinn",
-    path: "/utforsk-data/barn-og-unge/registrert-fravaer-i-grunnskolen-10-trinn",
+    path: "/om-tallene/barn-og-unge/registrert-fravaer-i-grunnskolen-10-trinn",
     title: "Registrert fravær i grunnskolen (10. trinn)",
     category: "Barn og unge",
     summary: "Viser registrert fravær for elever på 10. trinn.",
@@ -164,7 +164,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "registrert-fravaer-i-videregaende-skole",
-    path: "/utforsk-data/barn-og-unge/registrert-fravaer-i-videregaende-skole",
+    path: "/om-tallene/barn-og-unge/registrert-fravaer-i-videregaende-skole",
     title: "Registrert fravær i videregående skole",
     category: "Barn og unge",
     summary: "Viser registrert fravær i videregående opplæring.",
@@ -178,7 +178,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "andel-elever-som-har-sluttet-i-videregaende-opplaering-i-lopet-av-skolearet",
-    path: "/utforsk-data/barn-og-unge/andel-elever-som-har-sluttet-i-videregaende-opplaering-i-lopet-av-skolearet",
+    path: "/om-tallene/barn-og-unge/andel-elever-som-har-sluttet-i-videregaende-opplaering-i-lopet-av-skolearet",
     title: "Andel elever som har sluttet på videregående skole",
     category: "Barn og unge",
     summary: "Viser andel elever som slutter i videregående opplæring i løpet av skoleåret.",
@@ -192,7 +192,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "lavinntekt",
-    path: "/utforsk-data/barn-og-unge/lavinntekt",
+    path: "/om-tallene/barn-og-unge/lavinntekt",
     title: "Barn og unge i husholdninger med lavinntekt (EU-60)",
     category: "Barn og unge",
     summary:
@@ -241,7 +241,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "nokkeltall-for-grunnskoler",
-    path: "/utforsk-data/barn-og-unge/nokkeltall-for-grunnskoler",
+    path: "/om-tallene/barn-og-unge/nokkeltall-for-grunnskoler",
     title: "Nøkkeltall for grunnskoler",
     category: "Barn og unge",
     summary: "Samler sentrale nøkkeltall for grunnskoler.",
@@ -255,7 +255,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "antall-kommunale-fritidssenter",
-    path: "/utforsk-data/barn-og-unge/antall-kommunale-fritidssenter",
+    path: "/om-tallene/barn-og-unge/antall-kommunale-fritidssenter",
     title: "Kommunale fritidstilbud - antall kommunale fritidssenter",
     category: "Barn og unge",
     summary: "Viser antall kommunale fritidssenter i kommunen.",
@@ -269,7 +269,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "kommunale-fritidstilbud-antall-frivillige-barne-og-ungdomsforeninger-som-far-kommunalt-tilskudd",
-    path: "/utforsk-data/barn-og-unge/kommunale-fritidstilbud-antall-frivillige-barne-og-ungdomsforeninger-som-far-kommunalt-tilskudd",
+    path: "/om-tallene/barn-og-unge/kommunale-fritidstilbud-antall-frivillige-barne-og-ungdomsforeninger-som-far-kommunalt-tilskudd",
     title: "Kommunale fritidstilbud - antall frivillige foreninger",
     category: "Barn og unge",
     summary: "Viser antall frivillige barne- og ungdomsforeninger som mottar kommunalt tilskudd.",
@@ -283,7 +283,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "kommunale-fritidstilbud-tilskudd-overforinger-til-frivillige-barne-og-ungdomsforeninger-per-lag-som-mottar-tilskudd",
-    path: "/utforsk-data/barn-og-unge/kommunale-fritidstilbud-tilskudd-overforinger-til-frivillige-barne-og-ungdomsforeninger-per-lag-som-mottar-tilskudd",
+    path: "/om-tallene/barn-og-unge/kommunale-fritidstilbud-tilskudd-overforinger-til-frivillige-barne-og-ungdomsforeninger-per-lag-som-mottar-tilskudd",
     title: "Kommunale fritidstilbud - tilskudd per lag",
     category: "Barn og unge",
     summary: "Viser kommunale overføringer til frivillige barne- og ungdomsforeninger per lag som mottar tilskudd.",
@@ -297,7 +297,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "vedvarende_lavinntekt_barn_unge",
-    path: "/utforsk-data/barn-og-unge/vedvarende_lavinntekt_barn_unge",
+    path: "/om-tallene/barn-og-unge/vedvarende_lavinntekt_barn_unge",
     title: "Barn og unge under 18 år i husholdninger med vedvarende lavinntekt (EU-skala 60 prosent)",
     category: "Barn og unge",
     summary: "Viser barn og unge som lever i husholdninger med vedvarende lavinntekt målt med EU-skala 60 prosent.",
@@ -311,7 +311,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "befolkningsendring-folketilvekst",
-    path: "/utforsk-data/demografi-og-boforhold/befolkningsendring-folketilvekst",
+    path: "/om-tallene/demografi-og-boforhold/befolkningsendring-folketilvekst",
     title: "Befolkningsendring",
     category: "Demografi og boforhold",
     summary: "Gir oversikt over folketilvekst, altså hvor mye befolkningen i et valgt område har økt eller sunket i løpet av et år.",
@@ -338,7 +338,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "antall-levendefodte",
-    path: "/utforsk-data/demografi-og-boforhold/antall-levendefodte",
+    path: "/om-tallene/demografi-og-boforhold/antall-levendefodte",
     title: "Levendefødte",
     category: "Demografi og boforhold",
     summary: "Viser antall levendefødte i et valgt område.",
@@ -355,7 +355,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "endringer-i-befolkningen-tilflytting",
-    path: "/utforsk-data/demografi-og-boforhold/endringer-i-befolkningen-tilflytting",
+    path: "/om-tallene/demografi-og-boforhold/endringer-i-befolkningen-tilflytting",
     title: "Tilflytting",
     category: "Demografi og boforhold",
     summary: "Viser tilflytting til et valgt område som del av befolkningsendringer.",
@@ -370,7 +370,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "antall-personer-etter-alder-og-kjonn",
-    path: "/utforsk-data/demografi-og-boforhold/antall-personer-etter-alder-og-kjonn",
+    path: "/om-tallene/demografi-og-boforhold/antall-personer-etter-alder-og-kjonn",
     title: "Antall personer, etter alder og kjønn",
     category: "Demografi og boforhold",
     summary: "Viser befolkningen fordelt etter alder og kjønn.",
@@ -389,7 +389,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "alder_husholdningstype_bosted",
-    path: "/utforsk-data/demografi-og-boforhold/alder_husholdningstype_bosted",
+    path: "/om-tallene/demografi-og-boforhold/alder_husholdningstype_bosted",
     title: "Antall personer, etter aldersgruppe, husholdningstype og bosted",
     category: "Demografi og boforhold",
     summary: "Viser personer fordelt etter alder, husholdningstype og bosted.",
@@ -402,7 +402,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "antall-familier-etter-familietype",
-    path: "/utforsk-data/demografi-og-boforhold/antall-familier-etter-familietype",
+    path: "/om-tallene/demografi-og-boforhold/antall-familier-etter-familietype",
     title: "Antall familier, etter familietype",
     category: "Demografi og boforhold",
     summary: "Viser antall familier fordelt etter familietype.",
@@ -416,7 +416,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "antall-personer-16-ar-og-over-etter-utdanningsniva-og-kjonn",
-    path: "/utforsk-data/demografi-og-boforhold/antall-personer-16-ar-og-over-etter-utdanningsniva-og-kjonn",
+    path: "/om-tallene/demografi-og-boforhold/antall-personer-16-ar-og-over-etter-utdanningsniva-og-kjonn",
     title: "Antall personer i alderen 16 år og over, etter utdanningsnivå og kjønn",
     category: "Demografi og boforhold",
     summary: "Viser personer fra 16 år og oppover fordelt etter utdanningsnivå og kjønn.",
@@ -429,7 +429,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "sykehjem",
-    path: "/utforsk-data/helse-og-eldre/sykehjem",
+    path: "/om-tallene/helse-og-eldre/sykehjem",
     title: "Antall beboere i sykehjem",
     category: "Helse og eldre",
     summary: "Viser antall beboere i sykehjem.",
@@ -444,7 +444,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "brukere-av-hjemmetjeneste",
-    path: "/utforsk-data/helse-og-eldre/brukere-av-hjemmetjeneste",
+    path: "/om-tallene/helse-og-eldre/brukere-av-hjemmetjeneste",
     title: "Antall personer som bruker hjemmetjeneste",
     category: "Helse og eldre",
     summary: "Viser antall personer som mottar hjemmetjenester.",
@@ -457,7 +457,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "bosetting-av-flyktninger",
-    path: "/utforsk-data/asylsokere-flyktninger-og-migrasjon/bosetting-av-flyktninger",
+    path: "/om-tallene/asylsokere-flyktninger-og-migrasjon/bosetting-av-flyktninger",
     title: "Bosetting av flyktninger",
     category: "Flyktninger og asylsøkere",
     summary: "Viser bosetting av flyktninger i kommuner og fylker.",
@@ -472,7 +472,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "innvandrere-etter-innvandringsgrunn-og-kjonn",
-    path: "/utforsk-data/asylsokere-flyktninger-og-migrasjon/innvandrere-etter-innvandringsgrunn-og-kjonn",
+    path: "/om-tallene/asylsokere-flyktninger-og-migrasjon/innvandrere-etter-innvandringsgrunn-og-kjonn",
     title: "Antall innvandrere, etter innvandringsgrunn og kjønn",
     category: "Flyktninger og asylsøkere",
     summary: "Viser innvandrere fordelt etter innvandringsgrunn og kjønn.",
@@ -485,7 +485,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "innvandrere-etter-landbakgrunn",
-    path: "/utforsk-data/asylsokere-flyktninger-og-migrasjon/innvandrere-etter-landbakgrunn",
+    path: "/om-tallene/asylsokere-flyktninger-og-migrasjon/innvandrere-etter-landbakgrunn",
     title: "Antall innvandrere, etter landbakgrunn",
     category: "Flyktninger og asylsøkere",
     summary: "Viser innvandrere fordelt etter landbakgrunn.",
@@ -498,7 +498,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "medlemmer-i-rode-kors-arsrapport",
-    path: "/utforsk-data/frivillighet/medlemmer-i-rode-kors-arsrapport",
+    path: "/om-tallene/frivillighet/medlemmer-i-rode-kors-arsrapport",
     title: "Medlemmer i Røde Kors - årsrapport",
     category: "Frivillighet",
     summary: "Viser medlemstall fra Røde Kors årsrapport.",
@@ -513,7 +513,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "frivillige-i-rode-kors-arsrapport",
-    path: "/utforsk-data/frivillighet/frivillige-i-rode-kors-arsrapport",
+    path: "/om-tallene/frivillighet/frivillige-i-rode-kors-arsrapport",
     title: "Frivillige i Røde Kors - årsrapport",
     category: "Frivillighet",
     summary: "Viser frivilligtall fra Røde Kors årsrapport.",
@@ -527,7 +527,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "organisasjoner-som-er-registrert-i-frivillighetsregisteret",
-    path: "/utforsk-data/frivillighet/organisasjoner-som-er-registrert-i-frivillighetsregisteret",
+    path: "/om-tallene/frivillighet/organisasjoner-som-er-registrert-i-frivillighetsregisteret",
     title: "Organisasjoner som er registrert i Frivillighetsregisteret",
     category: "Frivillighet",
     summary: "Viser organisasjoner registrert i Frivillighetsregisteret.",
@@ -541,7 +541,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "personer-som-tilhorer-husholdninger-med-lavinntekt-eu-60-hele-befolkningen",
-    path: "/utforsk-data/okonomi/personer-som-tilhorer-husholdninger-med-lavinntekt-eu-60-hele-befolkningen",
+    path: "/om-tallene/okonomi/personer-som-tilhorer-husholdninger-med-lavinntekt-eu-60-hele-befolkningen",
     title: "Personer i husholdninger med lavinntekt (EU-60), hele befolkningen",
     category: "Økonomi",
     summary: "Viser personer i hele befolkningen som tilhører husholdninger med lavinntekt etter EU-60.",
@@ -555,7 +555,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "vedvarende_lavinntekt",
-    path: "/utforsk-data/okonomi/vedvarende_lavinntekt",
+    path: "/om-tallene/okonomi/vedvarende_lavinntekt",
     title: "Personer i husholdninger med vedvarende lavinntekt (EU-skala 60 prosent), etter alder",
     category: "Økonomi",
     summary: "Viser personer i husholdninger med vedvarende lavinntekt fordelt etter alder.",
@@ -568,7 +568,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "registrerte-arbeidsledige-etter-maned",
-    path: "/utforsk-data/okonomi/registrerte-arbeidsledige-etter-maned",
+    path: "/om-tallene/okonomi/registrerte-arbeidsledige-etter-maned",
     title: "Registrerte helt arbeidsledige, etter måned",
     category: "Økonomi",
     summary: "Viser registrerte helt arbeidsledige etter måned.",
@@ -583,7 +583,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "antall-sosialhjelpsmottakere",
-    path: "/utforsk-data/okonomi/antall-sosialhjelpsmottakere",
+    path: "/om-tallene/okonomi/antall-sosialhjelpsmottakere",
     title: "Antall sosialhjelpsmottakere",
     category: "Økonomi",
     summary: "Viser antall mottakere av økonomisk sosialhjelp.",
@@ -599,7 +599,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "stonadssatser-for-sosialhjelp",
-    path: "/utforsk-data/okonomi/stonadssatser-for-sosialhjelp",
+    path: "/om-tallene/okonomi/stonadssatser-for-sosialhjelp",
     title: "Stønadssatser for sosialhjelp",
     category: "Økonomi",
     summary: "Viser stønadssatser for økonomisk sosialhjelp.",
@@ -613,7 +613,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "okonomisk-sosialhjelp-gjennomsnittlig-stonadstid",
-    path: "/utforsk-data/okonomi/okonomisk-sosialhjelp-gjennomsnittlig-stonadstid",
+    path: "/om-tallene/okonomi/okonomisk-sosialhjelp-gjennomsnittlig-stonadstid",
     title: "Økonomisk sosialhjelp - gjennomsnittlig stønadstid",
     category: "Økonomi",
     summary: "Viser gjennomsnittlig stønadstid for mottakere av økonomisk sosialhjelp.",
@@ -626,7 +626,7 @@ export const SAMFUNNSPULS_CATALOG: SamfunnspulsCatalogEntry[] = [
   },
   {
     slug: "utgifter-som-inngar-i-stonadssatsene-for-okonomisk-sosialhjelp",
-    path: "/utforsk-data/okonomi/utgifter-som-inngar-i-stonadssatsene-for-okonomisk-sosialhjelp",
+    path: "/om-tallene/okonomi/utgifter-som-inngar-i-stonadssatsene-for-okonomisk-sosialhjelp",
     title: "Økonomisk sosialhjelp - beregningsgrunnlag",
     category: "Økonomi",
     summary: "Beskriver utgifter som inngår i stønadssatsene for økonomisk sosialhjelp.",

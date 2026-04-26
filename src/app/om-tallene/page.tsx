@@ -31,7 +31,7 @@ import styles from "./page.module.css";
 
 const filterOptions = getCatalogFilterOptions(SAMFUNNSPULS_CATALOG);
 
-export default function UtforskDataPage() {
+export default function OmTallenePage() {
   const initialState = getInitialCatalogState();
   const [query, setQuery] = useState(initialState.query);
   const [category, setCategory] = useState<CatalogCategory | "all">(initialState.category);
