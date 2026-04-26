@@ -11,7 +11,7 @@
 .utilityBar {
   width: min(100%, 76rem);
   margin: 0 auto;
-  padding: 0 var(--ds-size-8) var(--ds-size-4);
+  padding: var(--ds-size-2) var(--ds-size-8) var(--ds-size-4);
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(18rem, 28rem);
   gap: var(--ds-size-5);
