@@ -83,7 +83,7 @@ curl -s http://localhost:3000/api/system/data-status | jq
 Deployed app:
 
 ```bash
-curl -s https://YOUR_VERCEL_DOMAIN/api/system/data-status | jq
+curl -s https://samfunnspuls-v2.vercel.app/api/system/data-status | jq
 ```
 
 What must be true:
@@ -105,7 +105,7 @@ curl -s http://localhost:3000/api/planning/areas | jq '{areas: (.areas | length)
 Deployed app:
 
 ```bash
-curl -s https://YOUR_VERCEL_DOMAIN/api/planning/areas | jq '{areas: (.areas | length), sources: (.metadata.sources | length)}'
+curl -s https://samfunnspuls-v2.vercel.app/api/planning/areas | jq '{areas: (.areas | length), sources: (.metadata.sources | length)}'
 ```
 
 What must be true:
