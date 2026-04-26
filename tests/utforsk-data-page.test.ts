@@ -72,11 +72,11 @@ test("site header exposes global data search", () => {
   assert.match(source, /\/utforsk-data\?q=/);
 });
 
-test("home route is a data home with design-system tables", () => {
+test("home route features view cards with a primary CTA to aktivitetsradar", () => {
   const source = readFileSync(path.join(repoRoot, "src/app/page.tsx"), "utf8");
 
   assert.match(source, /getViewCards/);
-  assert.match(source, /SAMFUNNSPULS_CATALOG/);
-  assert.match(source, /<Table/);
-  assert.match(source, /Direkte visninger/);
+  assert.match(source, /Button/);
+  assert.match(source, /\/aktivitetsradar/);
+  assert.match(source, /Analyser og datasett/);
 });

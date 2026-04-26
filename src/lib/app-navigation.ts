@@ -10,7 +10,7 @@ export type ViewCard = {
   title: string;
   href: string;
   description: string;
-  status: "Klar" | "Datagrunnlag klart" | "Neste steg";
+  status: "Klar" | "Utforsk data" | "Kommer";
   tags: string[];
 };
 
@@ -32,7 +32,7 @@ const VIEW_CARDS: ViewCard[] = [
     title: "Aktivitetsradar",
     href: "/aktivitetsradar",
     description:
-      "Sammenligner barn i lavinntekt fra SSB med lokale Røde Kors-aktiviteter for barn, ungdom og integrering.",
+      "Se hvilke kommuner som har høyest andel barn i lavinntekt og minst Røde Kors-dekning — og finn ut hvilke aktiviteter som allerede finnes der.",
     status: "Klar",
     tags: ["lavinntekt", "Røde Kors", "kommuner", "aktivitet"],
   },
@@ -40,25 +40,25 @@ const VIEW_CARDS: ViewCard[] = [
     title: "Barn og unge",
     href: "/utforsk-data?category=Barn+og+unge",
     description:
-      "Finn datasett om lavinntekt, skole, fritidstilbud, boforhold og andre oppvekstindikatorer.",
-    status: "Datagrunnlag klart",
+      "Datasett om lavinntekt, skole, fritidstilbud og boforhold. Nyttig for å kartlegge oppvekstvilkår i din kommune.",
+    status: "Utforsk data",
     tags: ["barn", "unge", "skole", "fritid", "lavinntekt"],
   },
   {
     title: "Demografi og flytting",
     href: "/utforsk-data?category=Demografi+og+boforhold",
     description:
-      "Se datagrunnlag for befolkningsendring, alder, kjønn, familier og flytting mellom områder.",
-    status: "Datagrunnlag klart",
-    tags: ["befolkningsendring", "folketilvekst", "tilflytting", "familier"],
+      "Befolkningsendring, alder, familiesammensetning og tilflytting. Hjelper deg forstå hvem som bor i området.",
+    status: "Utforsk data",
+    tags: ["befolkningsendring", "alder", "tilflytting", "familier"],
   },
   {
     title: "Økonomisk sårbarhet",
     href: "/utforsk-data?category=Økonomi",
     description:
-      "Utforsk lavinntekt, arbeidsledighet, sosialhjelp og stønadsdata som kan støtte lokal planlegging.",
-    status: "Neste steg",
-    tags: ["økonomi", "NAV", "arbeidsledige", "sosialhjelp", "lavinntekt"],
+      "Lavinntekt, arbeidsledighet og sosialhjelp på kommunenivå. Viser hvor det økonomiske presset er størst.",
+    status: "Kommer",
+    tags: ["økonomi", "NAV", "arbeidsledige", "sosialhjelp"],
   },
 ];
 

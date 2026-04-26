@@ -162,10 +162,10 @@ export default function Home() {
             <div className={styles.heroText}>
               <Tag data-color="primary-color-red">Lokal planlegging</Tag>
               <Heading level={1} data-size="xl">
-                Aktivitetsradar for lokale humanitære behov
+                Aktivitetsradar
               </Heading>
               <Paragraph data-size="lg">
-                Sammenlign barn og unge i lavinntekt med eksisterende Røde Kors-aktiviteter i kommunen.
+                Velg en kommune og se andel barn i lavinntekt, hvilke Røde Kors-foreninger som er aktive der, og hvilke aktiviteter de tilbyr.
               </Paragraph>
             </div>
           </div>
@@ -184,7 +184,7 @@ export default function Home() {
                       Velg kommune
                     </Heading>
                     <Paragraph>
-                      {areas.length} kommuner med både SSB-indikator og minst én lokal Røde Kors-forening.
+                      Søk blant {areas.length} kommuner der vi har både lavinntektsdata fra SSB og lokale Røde Kors-foreninger.
                     </Paragraph>
                   </div>
                   <Field>

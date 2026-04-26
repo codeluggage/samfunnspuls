@@ -34,19 +34,39 @@
   justify-items: start;
 }
 
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-size-5);
+  margin-block-start: var(--ds-size-3);
+  flex-wrap: wrap;
+}
+
 .viewGrid,
-.dataBand,
-.tableStack,
 .viewCard,
 .viewCardHeader,
-.sectionHeader {
+.sectionHeader,
+.featuredMeta {
   display: grid;
   gap: var(--ds-size-3);
 }
 
+.featuredInner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--ds-size-8);
+  align-items: center;
+}
+
+.featuredAction {
+  display: flex;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
 .cards {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--ds-size-4);
 }
 
@@ -56,48 +76,13 @@
   gap: var(--ds-size-2);
 }
 
-.tableGrid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(22rem, 0.9fr);
-  gap: var(--ds-size-4);
-  align-items: start;
-}
-
-.barTrack {
-  display: block;
-  min-inline-size: var(--ds-size-20);
-  block-size: var(--ds-size-2);
-  border-radius: var(--ds-border-radius-full);
-  background: var(--ds-color-neutral-surface-tinted);
-  overflow: hidden;
-}
-
-.barFill {
-  display: block;
-  block-size: 100%;
-  border-radius: inherit;
-  background: var(--ds-color-primary-color-red-base-default);
-}
-
-.barFillFull {
-  inline-size: 100%;
-}
-
-.barFillMedium {
-  inline-size: 48%;
-}
-
-.barFillSmall {
-  inline-size: 20%;
-}
-
-.barFillTiny {
-  inline-size: 14%;
-}
-
 @media (max-width: 64rem) {
-  .cards,
-  .tableGrid {
+  .featuredInner {
+    grid-template-columns: 1fr;
+    gap: var(--ds-size-5);
+  }
+
+  .cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -113,8 +98,7 @@
     padding-inline: var(--ds-size-5);
   }
 
-  .cards,
-  .tableGrid {
+  .cards {
     grid-template-columns: 1fr;
   }
 }
