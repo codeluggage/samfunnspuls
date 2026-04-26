@@ -154,8 +154,8 @@ export default function HomePage() {
                 </label>
                 <Suggestion
                   filter
-                  name="kommune"
-                  selected={selectedAreaOption}
+                  multiple={false}
+                  selected={selectedAreaOption ?? null}
                   onSelectedChange={handleAreaSuggestionChange as SuggestionSelectedChange}
                 >
                   <Suggestion.Input

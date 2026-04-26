@@ -59,6 +59,9 @@ test("home page surfaces a kommune picker as the primary entry point", () => {
   const source = readFileSync(path.join(repoRoot, "src/app/page.tsx"), "utf8");
 
   assert.match(source, /\bSuggestion\b/);
+  assert.match(source, /multiple=\{false\}/);
+  assert.match(source, /selected=\{selectedAreaOption \?\? null\}/);
+  assert.doesNotMatch(source, /name="kommune"/);
   assert.match(source, /findDefaultArea\(data\.areas\)/);
   assert.match(source, /municipality === "Oslo"/);
   assert.doesNotMatch(source, /Samfunnspuls case/);
