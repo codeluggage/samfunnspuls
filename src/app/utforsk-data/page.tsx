@@ -31,12 +31,13 @@ import styles from "./page.module.css";
 const filterOptions = getCatalogFilterOptions(SAMFUNNSPULS_CATALOG);
 
 export default function UtforskDataPage() {
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<CatalogCategory | "all">("all");
+  const initialState = getInitialCatalogState();
+  const [query, setQuery] = useState(initialState.query);
+  const [category, setCategory] = useState<CatalogCategory | "all">(initialState.category);
   const [source, setSource] = useState("all");
   const [valueType, setValueType] = useState<ValueType | "all">("all");
   const [status, setStatus] = useState<CatalogStatus | "all">("all");
-  const [selectedSlug, setSelectedSlug] = useState("lavinntekt");
+  const [selectedSlug, setSelectedSlug] = useState(initialState.selectedSlug);
 
   const results = useMemo(
     () =>
@@ -205,6 +206,32 @@ export default function UtforskDataPage() {
       </main>
     </>
   );
+}
+
+function getInitialCatalogState(): {
+  query: string;
+  category: CatalogCategory | "all";
+  selectedSlug: string;
+} {
+  if (typeof window === "undefined") {
+    return { query: "", category: "all", selectedSlug: "lavinntekt" };
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const categoryParam = params.get("category");
+  const datasetParam = params.get("datasett");
+
+  return {
+    query: params.get("q") ?? "",
+    category:
+      categoryParam && filterOptions.categories.includes(categoryParam as CatalogCategory)
+        ? (categoryParam as CatalogCategory)
+        : "all",
+    selectedSlug:
+      datasetParam && SAMFUNNSPULS_CATALOG.some((entry) => entry.slug === datasetParam)
+        ? datasetParam
+        : "lavinntekt",
+  };
 }
 
 function ResultCard({

@@ -20,7 +20,7 @@ test("utforsk-data route uses catalog search and design-system details", () => {
 test("home route navigation links to utforsk-data", () => {
   const source = readFileSync(path.join(repoRoot, "src/app/components/site-header.tsx"), "utf8");
 
-  assert.match(source, /Utforsk data/);
+  assert.match(source, /APP_NAV_ITEMS/);
   assert.match(source, /\/utforsk-data/);
   assert.match(source, /aria-current/);
   assert.match(source, /event\.preventDefault\(\)/);
@@ -55,11 +55,28 @@ test("utforsk-data related statistics stay in-page until detail routes exist", (
   }
 });
 
-test("home municipality picker is searchable and defaults to Oslo", () => {
-  const source = readFileSync(path.join(repoRoot, "src/app/page.tsx"), "utf8");
+test("activity radar municipality picker is searchable and defaults to Oslo", () => {
+  const source = readFileSync(path.join(repoRoot, "src/app/aktivitetsradar/page.tsx"), "utf8");
 
   assert.match(source, /\bSuggestion\b/);
   assert.match(source, /findDefaultArea\(data\.areas\)/);
   assert.match(source, /municipality === "Oslo"/);
   assert.doesNotMatch(source, /Samfunnspuls case/);
+});
+
+test("site header exposes global data search", () => {
+  const source = readFileSync(path.join(repoRoot, "src/app/components/site-header.tsx"), "utf8");
+
+  assert.match(source, /getGlobalSearchSuggestions/);
+  assert.match(source, /Søk i Samfunnspuls/);
+  assert.match(source, /\/utforsk-data\?q=/);
+});
+
+test("home route is a data home with design-system tables", () => {
+  const source = readFileSync(path.join(repoRoot, "src/app/page.tsx"), "utf8");
+
+  assert.match(source, /getViewCards/);
+  assert.match(source, /SAMFUNNSPULS_CATALOG/);
+  assert.match(source, /<Table/);
+  assert.match(source, /Direkte visninger/);
 });

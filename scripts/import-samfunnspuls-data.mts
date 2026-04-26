@@ -3,6 +3,8 @@ import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import * as planning from "../src/lib/planning";
 import type { LowIncomeNeed } from "../src/lib/planning";
+import { SAMFUNNSPULS_CATALOG } from "../src/lib/samfunnspuls/catalog";
+import { toCatalogDatabaseRows } from "../src/lib/samfunnspuls/database";
 
 type PlanningModule = typeof import("../src/lib/planning");
 
@@ -178,6 +180,13 @@ await upsert("branches", branchRows);
 await supabase.from("branch_activities").delete().neq("branch_id", "");
 await insertChunks("branch_activities", activityRows);
 await upsert("need_indicators", needRows);
+await upsert(
+  "statistic_catalog_entries",
+  toCatalogDatabaseRows(SAMFUNNSPULS_CATALOG).map((row) => ({
+    ...row,
+    imported_at: importedAt,
+  })),
+);
 
 console.log(
   JSON.stringify(
@@ -187,6 +196,7 @@ console.log(
       branches: branchRows.length,
       activities: activityRows.length,
       municipalitiesWithNeeds: needRows.length,
+      catalogEntries: SAMFUNNSPULS_CATALOG.length,
     },
     null,
     2,

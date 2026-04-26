@@ -86,6 +86,10 @@ export function getCatalogFilterOptions(entries: SamfunnspulsCatalogEntry[]): Ca
   };
 }
 
+export function getCatalogSearchText(entry: SamfunnspulsCatalogEntry): string {
+  return normalizeSearchText(Object.values(searchableFields(entry)).join(" "));
+}
+
 function matchesFilters(entry: SamfunnspulsCatalogEntry, filters: CatalogFilters | undefined): boolean {
   if (!filters) return true;
 
