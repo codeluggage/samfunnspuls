@@ -188,6 +188,7 @@ export default function HomePage() {
         {status === "ready" && selectedArea ? (
           <ProfileView
             area={selectedArea}
+            areas={areas}
             topPressureAreas={topPressureAreas}
             onSelectArea={setSelectedRegionCode}
           />
@@ -201,10 +202,12 @@ export default function HomePage() {
 
 function ProfileView({
   area,
+  areas,
   topPressureAreas,
   onSelectArea,
 }: {
   area: AreaProfile;
+  areas: AreaProfile[];
   topPressureAreas: AreaProfile[];
   onSelectArea: (regionCode: string) => void;
 }) {
@@ -230,6 +233,43 @@ function ProfileView({
         {area.indicators.map((snapshot) => (
           <IndicatorRow key={snapshot.indicator.id} snapshot={snapshot} />
         ))}
+      </section>
+
+      <section className={styles.visualizationGrid} aria-label="Visualisering av nøkkeltall">
+        <Card data-color="neutral">
+          <CardBlock>
+            <div className={styles.cardStack}>
+              <Heading level={3} data-size="md">
+                Sammenligning med Norge
+              </Heading>
+              <Paragraph data-size="sm">
+                Vi viser valgt kommune mot landssnittet for indikatorene vi har tall på.
+              </Paragraph>
+              <IndicatorComparisonChart area={area} />
+            </div>
+          </CardBlock>
+        </Card>
+
+        <Card data-color="neutral">
+          <CardBlock>
+            <div className={styles.cardStack}>
+              <Heading level={3} data-size="md">
+                Kommuner med høyest andel barn i lavinntekt
+              </Heading>
+              <Paragraph data-size="sm">
+                Klikk på en kommune i grafen for å oppdatere profilen.
+              </Paragraph>
+              <PressureGraph
+                areas={areas}
+                selectedRegionCode={area.regionCode}
+                onSelect={onSelectArea}
+              />
+              <Paragraph data-size="sm">
+                Lengden på stolpene viser nivået i prosent.
+              </Paragraph>
+            </div>
+          </CardBlock>
+        </Card>
       </section>
 
       <div className={styles.twoColumn}>
@@ -334,6 +374,79 @@ function IndicatorRow({ snapshot }: { snapshot: IndicatorSnapshot }) {
   );
 }
 
+function IndicatorComparisonChart({ area }: { area: AreaProfile }) {
+  const comparableIndicators = area.indicators.filter(
+    (snapshot) => snapshot.value !== null && snapshot.nationalAverage !== null,
+  );
+
+  if (!comparableIndicators.length) {
+    return <Paragraph data-size="sm">Vi mangler nok data til å vise sammenligning akkurat nå.</Paragraph>;
+  }
+
+  return (
+    <div className={styles.comparisonChart} role="list" aria-label={`Indikatorsammenligning for ${area.municipality}`}>
+      {comparableIndicators.map((snapshot) => {
+        const value = snapshot.value as number;
+        const nationalAverage = snapshot.nationalAverage as number;
+        const maxMagnitude = Math.max(Math.abs(value), Math.abs(nationalAverage), 1);
+
+        return (
+          <article key={snapshot.indicator.id} className={styles.comparisonRow} role="listitem">
+            <Heading level={4} data-size="xs">
+              {snapshot.indicator.shortLabel}
+            </Heading>
+            <div className={styles.comparisonBars}>
+              <ComparisonBar
+                label={area.municipality}
+                value={value}
+                unit={snapshot.indicator.unit}
+                maxMagnitude={maxMagnitude}
+                variant="area"
+              />
+              <ComparisonBar
+                label="Norge"
+                value={nationalAverage}
+                unit={snapshot.indicator.unit}
+                maxMagnitude={maxMagnitude}
+                variant="national"
+              />
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
+function ComparisonBar({
+  label,
+  value,
+  unit,
+  maxMagnitude,
+  variant,
+}: {
+  label: string;
+  value: number;
+  unit: "percent" | "count" | "per-mille";
+  maxMagnitude: number;
+  variant: "area" | "national";
+}) {
+  const valueClassName = value < 0 ? styles.comparisonValueNegative : styles.comparisonValue;
+
+  return (
+    <div className={styles.comparisonBarRow}>
+      <span className={styles.comparisonLabel}>{label}</span>
+      <progress
+        className={variant === "area" ? styles.comparisonTrackArea : styles.comparisonTrackNational}
+        max={maxMagnitude}
+        value={Math.abs(value)}
+        aria-hidden
+      />
+      <span className={valueClassName}>{formatValue(value, unit)}</span>
+    </div>
+  );
+}
+
 function ActivityCoverageList({ area }: { area: AreaProfile }) {
   if (area.matchingBranchesCount === 0) {
     return (
@@ -402,6 +515,60 @@ function PressureRanking({
               {area.municipality}
               <span className={styles.rankValue} aria-hidden>
                 {formatValue(area.pressureScore, "percent")}
+              </span>
+            </Button>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function PressureGraph({
+  areas,
+  selectedRegionCode,
+  onSelect,
+}: {
+  areas: AreaProfile[];
+  selectedRegionCode: string;
+  onSelect: (regionCode: string) => void;
+}) {
+  const graphAreas = [...areas]
+    .filter((entry) => entry.pressureScore !== null)
+    .sort((left, right) => (right.pressureScore ?? 0) - (left.pressureScore ?? 0))
+    .slice(0, 15);
+
+  if (!graphAreas.length) {
+    return <Paragraph data-size="sm">Vi mangler nok data til å vise graf akkurat nå.</Paragraph>;
+  }
+
+  const maxScore = Math.max(...graphAreas.map((entry) => entry.pressureScore ?? 0), 1);
+
+  return (
+    <ol className={styles.pressureGraphList}>
+      {graphAreas.map((entry, index) => {
+        const isSelected = entry.regionCode === selectedRegionCode;
+
+        return (
+          <li key={entry.regionCode} className={isSelected ? styles.pressureGraphRowSelected : styles.pressureGraphRow}>
+            <Button
+              variant="tertiary"
+              onClick={() => onSelect(entry.regionCode)}
+              aria-pressed={isSelected}
+            >
+              <span className={styles.pressureGraphButtonContent}>
+                <span className={styles.pressureGraphLabel}>
+                  {index + 1}. {entry.municipality}
+                </span>
+                <progress
+                  className={isSelected ? styles.pressureGraphTrackSelected : styles.pressureGraphTrack}
+                  max={maxScore}
+                  value={entry.pressureScore ?? 0}
+                  aria-hidden
+                />
+                <span className={styles.pressureGraphValue}>
+                  {formatValue(entry.pressureScore, "percent")}
+                </span>
               </span>
             </Button>
           </li>
