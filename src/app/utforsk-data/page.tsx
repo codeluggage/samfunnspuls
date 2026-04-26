@@ -54,18 +54,21 @@ export default function UtforskDataPage() {
 
       <main className={styles.main}>
         <section className={styles.hero}>
-          <div className={styles.heroText}>
-            <Tag data-color="info">Datakatalog</Tag>
-            <Heading level={1} data-size="xl">
-              Utforsk samfunnsdata på tvers av kilder
-            </Heading>
-            <Paragraph data-size="lg">
-              Søk etter tema, tabellnummer, kilde eller forklarende tekst for å finne relevante datasett.
-            </Paragraph>
-          </div>
-          <div className={styles.heroStats} aria-label="Katalogstatus">
-            <strong>{SAMFUNNSPULS_CATALOG.length}</strong>
-            <span>statistikker kartlagt</span>
+          <div className={styles.heroDecor} aria-hidden />
+          <div className={styles.heroInner}>
+            <div className={styles.heroText}>
+              <Tag data-color="primary-color-red">Datakatalog</Tag>
+              <Heading level={1} data-size="xl">
+                Utforsk samfunnsdata på tvers av kilder
+              </Heading>
+              <Paragraph data-size="lg">
+                Søk etter tema, tabellnummer, kilde eller forklarende tekst for å finne relevante datasett.
+              </Paragraph>
+            </div>
+            <div className={styles.heroStats} aria-label="Katalogstatus">
+              <p className={styles.heroStatsValue}>{SAMFUNNSPULS_CATALOG.length}</p>
+              <Paragraph data-size="sm">statistikker kartlagt</Paragraph>
+            </div>
           </div>
         </section>
 
@@ -216,31 +219,41 @@ function ResultCard({
   const entry = result.entry;
 
   return (
-    <Card data-color={isSelected ? "info" : "neutral"}>
-      <CardBlock>
-        <article className={styles.resultCard}>
-          <div className={styles.resultTitle}>
-            <Tag data-color={statusColor(entry.status)}>{statusLabel(entry.status)}</Tag>
-            <Heading level={3} data-size="sm">
-              {entry.title}
-            </Heading>
-          </div>
-          <Paragraph data-size="sm">{entry.summary ?? "Ikke kartlagt ennå"}</Paragraph>
-          <div className={styles.tagList} aria-label={`Metadata for ${entry.title}`}>
-            <Tag data-color="neutral">{entry.category}</Tag>
-            <Tag data-color="neutral">{entry.source}</Tag>
-            {entry.ssbTables?.map((table) => (
-              <Tag key={table.id} data-color="info">
-                SSB {table.id}
-              </Tag>
-            ))}
-          </div>
-          <Button variant={isSelected ? "primary" : "secondary"} data-size="sm" onClick={onSelect}>
-            Vis detaljer
-          </Button>
-        </article>
-      </CardBlock>
-    </Card>
+    <div className={isSelected ? styles.resultItemSelected : styles.resultItem}>
+      <Card data-color="neutral">
+        <CardBlock>
+          <article className={styles.resultCard}>
+            <div className={styles.resultTitle}>
+              <div className={styles.tagRow}>
+                <Tag data-color={statusColor(entry.status)}>{statusLabel(entry.status)}</Tag>
+                {isSelected ? <Tag data-color="primary-color-red">Valgt</Tag> : null}
+              </div>
+              <Heading level={3} data-size="sm">
+                {entry.title}
+              </Heading>
+            </div>
+            <Paragraph data-size="sm">{entry.summary ?? "Ikke kartlagt ennå"}</Paragraph>
+            <div className={styles.tagList} aria-label={`Metadata for ${entry.title}`}>
+              <Tag data-color="neutral">{entry.category}</Tag>
+              <Tag data-color="neutral">{entry.source}</Tag>
+              {entry.ssbTables?.map((table) => (
+                <Tag key={table.id} data-color="info">
+                  SSB {table.id}
+                </Tag>
+              ))}
+            </div>
+            <Button
+              variant={isSelected ? "primary" : "secondary"}
+              data-size="sm"
+              onClick={onSelect}
+              aria-pressed={isSelected}
+            >
+              {isSelected ? "Viser detaljer" : "Vis detaljer"}
+            </Button>
+          </article>
+        </CardBlock>
+      </Card>
+    </div>
   );
 }
 

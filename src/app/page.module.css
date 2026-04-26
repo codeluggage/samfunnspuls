@@ -7,29 +7,37 @@
 }
 
 .hero {
-  display: flex;
-  gap: var(--ds-size-3);
-  align-items: end;
-  justify-content: space-between;
-  padding-block: var(--ds-size-6) var(--ds-size-3);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--ds-border-radius-lg);
+  padding-block: var(--ds-size-22) var(--ds-size-15);
+  padding-inline: var(--ds-size-8);
+  background: var(--ds-color-primary-color-red-background-tinted);
+}
+
+.heroDecor {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("/brand/herosectionbg.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.heroInner {
+  max-width: 52rem;
+  margin: 0 auto;
+  display: grid;
+  gap: var(--ds-size-4);
 }
 
 .heroText {
-  max-width: 46rem;
   display: grid;
   gap: var(--ds-size-3);
-}
-
-.stack {
-  display: grid;
-  gap: var(--ds-size-3);
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ds-size-3);
-  align-items: center;
+  justify-items: start;
 }
 
 .dashboard {
@@ -55,14 +63,19 @@
   gap: var(--ds-size-2);
 }
 
-.metric span {
+.metric > :first-child {
   color: var(--ds-color-neutral-text-subtle);
-  font-weight: 600;
+  font-weight: var(--ds-font-weight-semibold);
 }
 
-.metric strong {
-  font-size: 2rem;
-  line-height: 1;
+.metricValue {
+  margin: 0;
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-heading-md-font-size);
+  font-weight: var(--ds-font-weight-medium);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--ds-color-neutral-text-default);
 }
 
 .twoColumn {
@@ -72,8 +85,7 @@
   align-items: start;
 }
 
-.cardStack,
-.sourcePanel {
+.cardStack {
   display: grid;
   gap: var(--ds-size-3);
 }
@@ -90,12 +102,24 @@
   overflow-x: auto;
 }
 
+.sourceFootnote {
+  display: grid;
+  gap: var(--ds-size-2);
+  padding-block-start: var(--ds-size-5);
+  border-block-start: var(--ds-border-width-default) solid var(--ds-color-neutral-border-subtle);
+  color: var(--ds-color-neutral-text-subtle);
+}
+
 @media (max-width: 56.25rem) {
   .main {
     padding: var(--ds-size-5);
   }
 
-  .hero,
+  .hero {
+    padding-block: var(--ds-size-15) var(--ds-size-10);
+    padding-inline: var(--ds-size-5);
+  }
+
   .filterBar,
   .twoColumn {
     grid-template-columns: 1fr;
@@ -110,6 +134,11 @@
 @media (max-width: 35rem) {
   .main {
     padding: var(--ds-size-4);
+  }
+
+  .hero {
+    padding-block: var(--ds-size-12) var(--ds-size-8);
+    padding-inline: var(--ds-size-4);
   }
 
   .summaryGrid {

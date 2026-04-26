@@ -2,9 +2,10 @@
 
 import {
   Alert,
-  Button,
   Card,
   CardBlock,
+  Chip,
+  CrossCorner,
   Field,
   Heading,
   Link,
@@ -150,15 +151,24 @@ export default function Home() {
 
       <main className={styles.main}>
         <section className={styles.hero}>
-          <div className={styles.heroText}>
-            <Heading level={1} data-size="xl">
-              Aktivitetsradar for lokale humanitære behov
-            </Heading>
-            <Paragraph data-size="lg">
-              Sammenlign barn og unge i lavinntekt med eksisterende Røde Kors-aktiviteter i kommunen.
-            </Paragraph>
+          <div className={styles.heroDecor} aria-hidden />
+          <CrossCorner
+            data-color="primary-color-red"
+            data-size="md"
+            position="top-left"
+            aria-hidden
+          />
+          <div className={styles.heroInner}>
+            <div className={styles.heroText}>
+              <Tag data-color="primary-color-red">Lokal planlegging</Tag>
+              <Heading level={1} data-size="xl">
+                Aktivitetsradar for lokale humanitære behov
+              </Heading>
+              <Paragraph data-size="lg">
+                Sammenlign barn og unge i lavinntekt med eksisterende Røde Kors-aktiviteter i kommunen.
+              </Paragraph>
+            </div>
           </div>
-          {metadata ? <SourcePanel metadata={metadata} /> : null}
         </section>
 
         {status === "loading" ? <LoadingState /> : null}
@@ -259,14 +269,13 @@ export default function Home() {
                     </Heading>
                     <div className={styles.rankList}>
                       {topAreas.map((area) => (
-                        <Button
+                        <Chip.Button
                           key={area.regionCode}
-                          variant={area.regionCode === selectedArea.regionCode ? "primary" : "secondary"}
-                          data-size="sm"
+                          aria-pressed={area.regionCode === selectedArea.regionCode}
                           onClick={() => setSelectedRegionCode(area.regionCode)}
                         >
                           {area.municipality} {formatPercent(area.lowIncomePercent)}
-                        </Button>
+                        </Chip.Button>
                       ))}
                     </div>
                   </div>
@@ -317,6 +326,8 @@ export default function Home() {
             </Card>
           </section>
         ) : null}
+
+        {metadata ? <SourceFootnote metadata={metadata} /> : null}
       </main>
     </>
   );
@@ -327,8 +338,8 @@ function MetricCard({ label, value, detail }: { label: string; value: string; de
     <Card data-color="neutral">
       <CardBlock>
         <div className={styles.metric}>
-          <span>{label}</span>
-          <strong>{value}</strong>
+          <Paragraph data-size="sm">{label}</Paragraph>
+          <p className={styles.metricValue}>{value}</p>
           <Paragraph data-size="sm">{detail}</Paragraph>
         </div>
       </CardBlock>
@@ -336,25 +347,19 @@ function MetricCard({ label, value, detail }: { label: string; value: string; de
   );
 }
 
-function SourcePanel({ metadata }: { metadata: ApiResponse["metadata"] }) {
+function SourceFootnote({ metadata }: { metadata: ApiResponse["metadata"] }) {
   const ssbSource = metadata.sources.find((source) => source.id === "ssb-08764");
   const orgSource = metadata.sources.find((source) => source.id === "red-cross-organizations");
 
   return (
-    <Card data-color="neutral">
-      <CardBlock>
-        <div className={styles.sourcePanel}>
-          <Heading level={2} data-size="sm">
-            Datagrunnlag
-          </Heading>
-          <Paragraph data-size="sm">SSB tabell 08764 oppdatert {formatDate(ssbSource?.source_updated_at)}.</Paragraph>
-          <Paragraph data-size="sm">
-            Organisasjonsdata fra Røde Kors API-uttak {formatDate(orgSource?.source_updated_at)}.
-          </Paragraph>
-          <Paragraph data-size="sm">Sist synkronisert {formatDate(ssbSource?.imported_at)}.</Paragraph>
-        </div>
-      </CardBlock>
-    </Card>
+    <footer className={styles.sourceFootnote} aria-label="Datagrunnlag">
+      <Heading level={2} data-size="xs">
+        Datagrunnlag
+      </Heading>
+      <Paragraph data-size="sm">
+        SSB tabell 08764 oppdatert {formatDate(ssbSource?.source_updated_at)}. Organisasjonsdata fra Røde Kors API-uttak {formatDate(orgSource?.source_updated_at)}. Sist synkronisert {formatDate(ssbSource?.imported_at)}.
+      </Paragraph>
+    </footer>
   );
 }
 
