@@ -4,37 +4,31 @@ import test from "node:test";
 import {
   APP_NAV_ITEMS,
   getGlobalSearchSuggestions,
-  getViewCards,
 } from "../src/lib/app-navigation";
 
-test("app navigation exposes home, analysis, and raw data views", () => {
+test("app navigation surfaces the planning home and the data sources page", () => {
   assert.deepEqual(
     APP_NAV_ITEMS.map((item) => [item.label, item.href]),
     [
       ["Samfunnspuls", "/"],
-      ["Aktivitetsradar", "/aktivitetsradar"],
-      ["Utforsk data", "/utforsk-data"],
+      ["Om tallene", "/om-tallene"],
     ],
   );
 });
 
-test("view cards include the integrated activity radar as a data view", () => {
-  const cards = getViewCards();
-  const radar = cards.find((card) => card.href === "/aktivitetsradar");
-
-  assert.equal(radar?.status, "Klar");
-  assert.match(radar?.description ?? "", /lavinntekt/i);
-  assert.match(radar?.description ?? "", /Røde Kors/i);
-});
-
-test("global search suggestions include catalog hits and app views", () => {
+test("global search routes catalog hits to /om-tallene", () => {
   const suggestions = getGlobalSearchSuggestions("lavinntekt");
-
-  assert.equal(suggestions[0]?.href, "/aktivitetsradar");
+  assert.ok(suggestions.length > 0, "expected at least one suggestion");
   assert.ok(
     suggestions.some(
-      (suggestion) => suggestion.href.includes("/utforsk-data?") && suggestion.title.includes("lavinntekt"),
+      (suggestion) => suggestion.href.includes("/om-tallene?") && /lavinntekt/i.test(suggestion.title),
     ),
-    "expected lavinntekt catalog suggestion",
+    "expected lavinntekt catalog suggestion under /om-tallene",
   );
+});
+
+test("empty query returns view-level suggestions", () => {
+  const suggestions = getGlobalSearchSuggestions("");
+  assert.ok(suggestions.some((suggestion) => suggestion.href === "/"));
+  assert.ok(suggestions.some((suggestion) => suggestion.href === "/om-tallene"));
 });

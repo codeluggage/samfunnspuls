@@ -1,9 +1,9 @@
 .main {
-  width: min(100%, 76rem);
+  width: min(100%, 78rem);
   margin: 0 auto;
   padding: var(--ds-size-8);
   display: grid;
-  gap: var(--ds-size-10);
+  gap: var(--ds-size-12);
 }
 
 .hero {
@@ -12,7 +12,7 @@
   overflow: hidden;
   border-radius: var(--ds-border-radius-lg);
   padding-block: var(--ds-size-22) var(--ds-size-15);
-  padding-inline: var(--ds-size-8);
+  padding-inline: var(--ds-size-10);
   background: var(--ds-color-primary-color-red-background-tinted);
 }
 
@@ -23,66 +23,246 @@
   background-image: url("/brand/herosectionbg.png");
   background-size: cover;
   background-position: center;
-  opacity: 0.18;
+  opacity: 0.16;
   pointer-events: none;
 }
 
-.heroText {
-  max-width: 56rem;
+.heroInner {
+  max-width: 60rem;
   display: grid;
-  gap: var(--ds-size-3);
+  gap: var(--ds-size-4);
   justify-items: start;
 }
 
-.heroActions {
-  display: flex;
-  align-items: center;
-  gap: var(--ds-size-5);
-  margin-block-start: var(--ds-size-3);
-  flex-wrap: wrap;
+.picker {
+  margin-block-start: var(--ds-size-4);
+  display: grid;
+  gap: var(--ds-size-2);
+  width: min(100%, 32rem);
 }
 
-.viewGrid,
-.viewCard,
-.viewCardHeader,
-.sectionHeader,
-.featuredMeta {
+.pickerLabel {
+  display: block;
+  font-weight: 600;
+  margin-block-end: var(--ds-size-1);
+}
+
+.profile {
+  display: grid;
+  gap: var(--ds-size-10);
+}
+
+.profileHeader {
+  display: grid;
+  gap: var(--ds-size-3);
+  max-width: 60rem;
+}
+
+.profileHeaderText {
   display: grid;
   gap: var(--ds-size-3);
 }
 
-.featuredInner {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--ds-size-8);
-  align-items: center;
-}
-
-.featuredAction {
-  display: flex;
-  align-items: flex-start;
-  flex-shrink: 0;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--ds-size-4);
-}
-
-.tagList {
+.tagRow {
   display: flex;
   flex-wrap: wrap;
   gap: var(--ds-size-2);
 }
 
+.indicatorStrip {
+  display: grid;
+  gap: var(--ds-size-1);
+  border-block: var(--ds-border-width-default) solid var(--ds-color-neutral-border-subtle);
+  padding-block: var(--ds-size-5);
+}
+
+.indicatorRow {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1.2fr) minmax(14rem, 1fr) minmax(0, 1.4fr);
+  gap: var(--ds-size-5);
+  align-items: baseline;
+  padding-block: var(--ds-size-3);
+  border-block-start: var(--ds-border-width-default) dashed var(--ds-color-neutral-border-subtle);
+}
+
+.indicatorRow:first-child {
+  border-block-start: none;
+}
+
+.indicatorMain {
+  display: grid;
+  gap: var(--ds-size-1);
+}
+
+.indicatorValue {
+  font-size: var(--ds-font-size-7);
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ds-color-neutral-text-default);
+  margin: 0;
+}
+
+.indicatorLabel {
+  font-weight: 600;
+}
+
+.indicatorPeriod {
+  margin-inline-start: var(--ds-size-1);
+  color: var(--ds-color-neutral-text-subtle);
+}
+
+.indicatorMeta {
+  display: grid;
+  gap: var(--ds-size-1);
+}
+
+.indicatorDescription {
+  color: var(--ds-color-neutral-text-subtle);
+}
+
+.twoColumn {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--ds-size-5);
+  align-items: start;
+}
+
+.cardStack {
+  display: grid;
+  gap: var(--ds-size-3);
+}
+
+.activityList {
+  display: grid;
+  gap: var(--ds-size-2);
+  margin: 0;
+}
+
+.activityList > div {
+  display: grid;
+  grid-template-columns: minmax(8rem, 11rem) 1fr;
+  gap: var(--ds-size-3);
+  padding-block: var(--ds-size-1);
+  border-block-start: var(--ds-border-width-default) dashed var(--ds-color-neutral-border-subtle);
+}
+
+.activityList > div:first-child {
+  border-block-start: none;
+}
+
+.activityList dt {
+  font-weight: 600;
+  color: var(--ds-color-neutral-text-default);
+  margin: 0;
+}
+
+.activityList dd {
+  margin: 0;
+  color: var(--ds-color-neutral-text-default);
+}
+
+.activityMissing {
+  color: var(--ds-color-neutral-text-subtle);
+  font-style: italic;
+}
+
+.branchList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--ds-size-2);
+}
+
+.branchList li {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) minmax(0, 2fr) auto;
+  gap: var(--ds-size-3);
+  align-items: baseline;
+  padding-block: var(--ds-size-2);
+  border-block-start: var(--ds-border-width-default) dashed var(--ds-color-neutral-border-subtle);
+}
+
+.branchName {
+  font-weight: 600;
+}
+
+.branchMeta {
+  color: var(--ds-color-neutral-text-subtle);
+  font-size: var(--ds-font-size-2);
+}
+
+.rankList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--ds-size-1);
+}
+
+.rankRow,
+.rankRowSelected {
+  display: block;
+}
+
+.rankIndex {
+  display: inline-block;
+  inline-size: 2.25rem;
+  margin-inline-end: var(--ds-size-2);
+  color: currentColor;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+}
+
+.rankValue {
+  margin-inline-start: var(--ds-size-3);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.loadingGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--ds-size-3);
+}
+
+.sourceFootnote {
+  display: grid;
+  gap: var(--ds-size-2);
+  border-block-start: var(--ds-border-width-default) solid var(--ds-color-neutral-border-subtle);
+  padding-block-start: var(--ds-size-5);
+}
+
+.sourceList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--ds-size-2);
+}
+
+.sourceList li {
+  display: grid;
+  gap: var(--ds-size-1);
+}
+
+.sourceMeta {
+  color: var(--ds-color-neutral-text-subtle);
+  font-size: var(--ds-font-size-2);
+}
+
 @media (max-width: 64rem) {
-  .featuredInner {
+  .twoColumn {
     grid-template-columns: 1fr;
-    gap: var(--ds-size-5);
   }
 
-  .cards {
+  .indicatorRow {
+    grid-template-columns: 1fr;
+    gap: var(--ds-size-2);
+  }
+
+  .loadingGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -90,7 +270,7 @@
 @media (max-width: 40rem) {
   .main {
     padding: var(--ds-size-4);
-    gap: var(--ds-size-7);
+    gap: var(--ds-size-8);
   }
 
   .hero {
@@ -98,7 +278,15 @@
     padding-inline: var(--ds-size-5);
   }
 
-  .cards {
+  .activityList > div {
+    grid-template-columns: 1fr;
+  }
+
+  .branchList li {
+    grid-template-columns: 1fr;
+  }
+
+  .loadingGrid {
     grid-template-columns: 1fr;
   }
 }

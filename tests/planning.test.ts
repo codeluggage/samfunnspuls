@@ -2,12 +2,13 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
-  buildAreaPlans,
+  buildAreaProfiles,
   getRelevantActivities,
   parseLowIncomeJsonStat,
+  parsePopulationJsonStat,
 } from "../src/lib/planning";
 
-const jsonStatSample = {
+const lowIncomeSample = {
   version: "2.0",
   class: "dataset",
   label: "08764",
@@ -41,25 +42,67 @@ const jsonStatSample = {
   value: [130343, 13, 31018, 9.9],
 };
 
-test("parseLowIncomeJsonStat returns municipality rows for the latest queried year", () => {
-  assert.deepEqual(parseLowIncomeJsonStat(jsonStatSample), [
-    {
-      regionCode: "0301",
-      municipality: "Oslo",
-      year: "2024",
-      childrenCount: 130343,
-      lowIncomePercent: 13,
-      sourceUpdatedAt: "2026-01-16T07:00:00Z",
+const populationSample = {
+  version: "2.0",
+  class: "dataset",
+  label: "06913",
+  source: "Statistisk sentralbyrå",
+  updated: "2026-01-16T07:00:00Z",
+  id: ["Region", "ContentsCode", "Tid"],
+  size: [2, 3, 1],
+  dimension: {
+    Region: {
+      category: {
+        index: { "0301": 0, "1103": 1 },
+        label: { "0301": "Oslo", "1103": "Stavanger" },
+      },
     },
-    {
-      regionCode: "1103",
-      municipality: "Stavanger",
-      year: "2024",
-      childrenCount: 31018,
-      lowIncomePercent: 9.9,
-      sourceUpdatedAt: "2026-01-16T07:00:00Z",
+    ContentsCode: {
+      category: {
+        index: { Folkemengde: 0, Folketilvekst: 1, Nettoinnflytting: 2 },
+        label: {
+          Folkemengde: "Befolkning 1. januar",
+          Folketilvekst: "Folketilvekst",
+          Nettoinnflytting: "Nettoinnflytting",
+        },
+      },
     },
-  ]);
+    Tid: {
+      category: {
+        index: { "2024": 0 },
+        label: { "2024": "2024" },
+      },
+    },
+  },
+  value: [700000, 7000, 3500, 150000, -300, 200],
+};
+
+test("parseLowIncomeJsonStat returns indicator readings for the latest year", () => {
+  const readings = parseLowIncomeJsonStat(lowIncomeSample);
+  assert.equal(readings.length, 2);
+  assert.equal(readings[0].indicatorId, "low-income-children");
+  assert.equal(readings[0].municipality, "Oslo");
+  assert.equal(readings[0].value, 13);
+  assert.equal(readings[1].municipality, "Stavanger");
+  assert.equal(readings[1].value, 9.9);
+});
+
+test("parsePopulationJsonStat emits population, growth and net-migration per mille", () => {
+  const readings = parsePopulationJsonStat(populationSample);
+  const oslo = readings.filter((r) => r.regionCode === "0301");
+  const stavanger = readings.filter((r) => r.regionCode === "1103");
+
+  const osloPopulation = oslo.find((r) => r.indicatorId === "population-total");
+  const osloGrowth = oslo.find((r) => r.indicatorId === "population-growth");
+  const osloMigration = oslo.find((r) => r.indicatorId === "net-migration");
+
+  assert.equal(osloPopulation?.value, 700000);
+  assert.equal(osloGrowth?.value, 10); // 7000 / 700000 * 1000
+  assert.equal(osloMigration?.value, 5); // 3500 / 700000 * 1000
+
+  const stavangerGrowth = stavanger.find((r) => r.indicatorId === "population-growth");
+  assert.ok(stavangerGrowth);
+  assert.ok(stavangerGrowth.value !== null && stavangerGrowth.value < 0);
 });
 
 test("getRelevantActivities keeps youth and integration activities with stable labels", () => {
@@ -80,9 +123,14 @@ test("getRelevantActivities keeps youth and integration activities with stable l
   ]);
 });
 
-test("buildAreaPlans joins need and local Red Cross activity coverage", () => {
-  const plans = buildAreaPlans({
-    needs: parseLowIncomeJsonStat(jsonStatSample),
+test("buildAreaProfiles joins indicators with Røde Kors activity coverage", () => {
+  const readings = [
+    ...parseLowIncomeJsonStat(lowIncomeSample),
+    ...parsePopulationJsonStat(populationSample),
+  ];
+
+  const profiles = buildAreaProfiles({
+    readings,
     branches: [
       {
         branchId: "A",
@@ -101,18 +149,22 @@ test("buildAreaPlans joins need and local Red Cross activity coverage", () => {
         activities: ["Besøkstjeneste"],
       },
     ],
-    importedAt: "2026-04-24T12:00:00.000Z",
   });
 
-  assert.equal(plans[0].municipality, "Oslo");
-  assert.equal(plans[0].planningSignal.level, "high-covered");
-  assert.equal(plans[0].matchingBranchesCount, 1);
-  assert.deepEqual(plans[0].topRelevantActivities, [
-    { activityName: "Barnas Røde Kors", branchesCount: 1 },
-    { activityName: "Leksehjelp", branchesCount: 1 },
-  ]);
+  const oslo = profiles.find((profile) => profile.municipality === "Oslo");
+  const stavanger = profiles.find((profile) => profile.municipality === "Stavanger");
 
-  assert.equal(plans[1].municipality, "Stavanger");
-  assert.equal(plans[1].planningSignal.level, "moderate-limited");
-  assert.equal(plans[1].matchingBranchesCount, 0);
+  assert.ok(oslo);
+  assert.equal(oslo.pressureBand, "high");
+  assert.equal(oslo.matchingBranchesCount, 1);
+  assert.equal(oslo.population, 700000);
+  assert.deepEqual(
+    oslo.topRelevantActivities.map((activity) => activity.activityName).sort(),
+    ["Barnas Røde Kors", "Leksehjelp"],
+  );
+  assert.match(oslo.narrative, /Oslo/);
+
+  assert.ok(stavanger);
+  assert.equal(stavanger.pressureBand, "moderate");
+  assert.equal(stavanger.matchingBranchesCount, 0);
 });

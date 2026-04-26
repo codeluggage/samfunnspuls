@@ -7,8 +7,8 @@ import { SAMFUNNSPULS_CATALOG } from "../src/lib/samfunnspuls/catalog";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-test("utforsk-data route uses catalog search and design-system details", () => {
-  const source = readFileSync(path.join(repoRoot, "src/app/utforsk-data/page.tsx"), "utf8");
+test("om-tallene route uses catalog search and design-system details", () => {
+  const source = readFileSync(path.join(repoRoot, "src/app/om-tallene/page.tsx"), "utf8");
 
   assert.match(source, /searchCatalog/);
   assert.match(source, /SAMFUNNSPULS_CATALOG/);
@@ -17,17 +17,17 @@ test("utforsk-data route uses catalog search and design-system details", () => {
   assert.match(source, /<main/);
 });
 
-test("home route navigation links to utforsk-data", () => {
+test("home navigation includes om-tallene", () => {
   const source = readFileSync(path.join(repoRoot, "src/app/components/site-header.tsx"), "utf8");
 
   assert.match(source, /APP_NAV_ITEMS/);
-  assert.match(source, /\/utforsk-data/);
+  assert.match(source, /\/om-tallene/);
   assert.match(source, /aria-current/);
   assert.match(source, /event\.preventDefault\(\)/);
 });
 
-test("utforsk-data filters use visible labels for browser accessibility checks", () => {
-  const source = readFileSync(path.join(repoRoot, "src/app/utforsk-data/page.tsx"), "utf8");
+test("om-tallene filters use visible labels for browser accessibility checks", () => {
+  const source = readFileSync(path.join(repoRoot, "src/app/om-tallene/page.tsx"), "utf8");
 
   assert.match(source, /<label htmlFor="catalog-category">Kategori<\/label>/);
   assert.match(source, /<label htmlFor="catalog-source">Kilde<\/label>/);
@@ -36,15 +36,15 @@ test("utforsk-data filters use visible labels for browser accessibility checks",
   assert.doesNotMatch(source, /aria-label="Filtrer på/);
 });
 
-test("utforsk-data uses tags for textual metadata instead of status badges", () => {
-  const source = readFileSync(path.join(repoRoot, "src/app/utforsk-data/page.tsx"), "utf8");
+test("om-tallene uses tags for textual metadata instead of status badges", () => {
+  const source = readFileSync(path.join(repoRoot, "src/app/om-tallene/page.tsx"), "utf8");
 
   assert.doesNotMatch(source, /\bBadge\b/);
   assert.match(source, /<Tag data-color="neutral">/);
 });
 
-test("utforsk-data related statistics stay in-page until detail routes exist", () => {
-  const source = readFileSync(path.join(repoRoot, "src/app/utforsk-data/page.tsx"), "utf8");
+test("om-tallene related statistics stay in-page until detail routes exist", () => {
+  const source = readFileSync(path.join(repoRoot, "src/app/om-tallene/page.tsx"), "utf8");
 
   assert.doesNotMatch(source, /<Link href=\{related\.path\}/);
   assert.match(source, /onRelatedSelect/);
@@ -55,28 +55,20 @@ test("utforsk-data related statistics stay in-page until detail routes exist", (
   }
 });
 
-test("activity radar municipality picker is searchable and defaults to Oslo", () => {
-  const source = readFileSync(path.join(repoRoot, "src/app/aktivitetsradar/page.tsx"), "utf8");
+test("home page surfaces a kommune picker as the primary entry point", () => {
+  const source = readFileSync(path.join(repoRoot, "src/app/page.tsx"), "utf8");
 
   assert.match(source, /\bSuggestion\b/);
   assert.match(source, /findDefaultArea\(data\.areas\)/);
   assert.match(source, /municipality === "Oslo"/);
   assert.doesNotMatch(source, /Samfunnspuls case/);
+  assert.match(source, /Hva trenger lokalsamfunnet ditt/);
 });
 
-test("site header exposes global data search", () => {
+test("site header exposes global data search routed to /om-tallene", () => {
   const source = readFileSync(path.join(repoRoot, "src/app/components/site-header.tsx"), "utf8");
 
   assert.match(source, /getGlobalSearchSuggestions/);
   assert.match(source, /Søk i Samfunnspuls/);
-  assert.match(source, /\/utforsk-data\?q=/);
-});
-
-test("home route features view cards with a primary CTA to aktivitetsradar", () => {
-  const source = readFileSync(path.join(repoRoot, "src/app/page.tsx"), "utf8");
-
-  assert.match(source, /getViewCards/);
-  assert.match(source, /Button/);
-  assert.match(source, /\/aktivitetsradar/);
-  assert.match(source, /Analyser og datasett/);
+  assert.match(source, /\/om-tallene\?q=/);
 });

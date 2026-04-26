@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
-import { buildAreaPlans, type BranchInput, type LowIncomeNeed } from "@/lib/planning";
+import {
+  buildAreaProfiles,
+  type BranchInput,
+  type IndicatorReading,
+} from "@/lib/planning";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import type { IndicatorId } from "@/lib/samfunnspuls/indicators";
 
 export const dynamic = "force-dynamic";
 
@@ -20,31 +25,42 @@ type ActivityRow = {
   activity_name: string;
 };
 
-type NeedRow = {
+type IndicatorValueRow = {
+  indicator_id: string;
   region_code: string;
   municipality: string;
-  year: number;
-  children_count: number | null;
-  low_income_percent: number | null;
+  county: string | null;
+  period: string;
+  value: number | null;
   source_updated_at: string | null;
   imported_at: string;
 };
+
+type DataSourceRow = {
+  id: string;
+  label: string;
+  url: string;
+  source_updated_at: string | null;
+  imported_at: string;
+};
+
+const TRACKED_SOURCE_IDS = ["ssb-08764", "ssb-06913", "red-cross-organizations"];
 
 export async function GET() {
   try {
     const supabase = getSupabaseAdmin();
 
-    const [needsResult, branchesResult, activitiesResult, sourceResult] = await Promise.all([
-      supabase.from("need_indicators").select("*").order("low_income_percent", { ascending: false }),
+    const [valuesResult, branchesResult, activitiesResult, sourcesResult] = await Promise.all([
+      supabase.from("indicator_values").select("*"),
       supabase.from("branches").select("*").order("branch_name", { ascending: true }),
       supabase.from("branch_activities").select("branch_id, activity_name"),
-      supabase.from("data_sources").select("*").in("id", ["ssb-08764", "red-cross-organizations"]),
+      supabase.from("data_sources").select("*").in("id", TRACKED_SOURCE_IDS),
     ]);
 
-    if (needsResult.error) throw needsResult.error;
+    if (valuesResult.error) throw valuesResult.error;
     if (branchesResult.error) throw branchesResult.error;
     if (activitiesResult.error) throw activitiesResult.error;
-    if (sourceResult.error) throw sourceResult.error;
+    if (sourcesResult.error) throw sourcesResult.error;
 
     const activitiesByBranch = new Map<string, string[]>();
     for (const activity of (activitiesResult.data ?? []) as ActivityRow[]) {
@@ -65,25 +81,30 @@ export async function GET() {
       activities: activitiesByBranch.get(branch.branch_id) ?? [],
     }));
 
-    const needs: LowIncomeNeed[] = ((needsResult.data ?? []) as NeedRow[]).map((need) => ({
-      regionCode: need.region_code,
-      municipality: need.municipality,
-      year: String(need.year),
-      childrenCount: need.children_count,
-      lowIncomePercent: need.low_income_percent,
-      sourceUpdatedAt: need.source_updated_at,
-    }));
+    const readings: IndicatorReading[] = ((valuesResult.data ?? []) as IndicatorValueRow[]).map(
+      (row) => ({
+        indicatorId: row.indicator_id as IndicatorId,
+        regionCode: row.region_code,
+        municipality: row.municipality,
+        county: row.county,
+        period: row.period,
+        value: row.value === null ? null : Number(row.value),
+        sourceUpdatedAt: row.source_updated_at,
+      }),
+    );
 
-    const latestImport =
-      ((needsResult.data ?? []) as NeedRow[])
-        .map((need) => need.imported_at)
-        .sort()
-        .at(-1) ?? new Date().toISOString();
+    const profiles = buildAreaProfiles({ readings, branches });
 
     return NextResponse.json({
-      areas: buildAreaPlans({ needs, branches, importedAt: latestImport }),
+      areas: profiles,
       metadata: {
-        sources: sourceResult.data ?? [],
+        sources: ((sourcesResult.data ?? []) as DataSourceRow[]).map((source) => ({
+          id: source.id,
+          label: source.label,
+          url: source.url,
+          sourceUpdatedAt: source.source_updated_at,
+          importedAt: source.imported_at,
+        })),
         generatedAt: new Date().toISOString(),
       },
     });

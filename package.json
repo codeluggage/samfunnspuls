@@ -9,7 +9,7 @@
     "test": "tsx --test tests/*.test.ts",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
-    "data:sync": "tsx --env-file=.env.local scripts/import-samfunnspuls-data.mts",
+    "data:sync": "tsx --env-file=.env.local scripts/import-samfunnspuls-data.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "skills:sync": "node scripts/sync-agent-assets.mjs",

@@ -58,12 +58,12 @@ export default function UtforskDataPage() {
           <div className={styles.heroDecor} aria-hidden />
           <div className={styles.heroInner}>
             <div className={styles.heroText}>
-              <Tag data-color="primary-color-red">Datakatalog</Tag>
+              <Tag data-color="primary-color-red">Om tallene</Tag>
               <Heading level={1} data-size="xl">
-                Utforsk samfunnsdata på tvers av kilder
+                Datakildene bak Samfunnspuls
               </Heading>
               <Paragraph data-size="lg">
-                Søk etter tema, tabellnummer, kilde eller forklarende tekst for å finne relevante datasett.
+                Oversikt over statistikkene som ligger til grunn for kommune­profilene. Søk etter tema, tabellnummer eller kilde for å finne kobling til SSB, NAV, Udir og IMDi.
               </Paragraph>
             </div>
             <div className={styles.heroStats} aria-label="Katalogstatus">

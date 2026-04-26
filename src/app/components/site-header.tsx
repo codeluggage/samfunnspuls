@@ -59,9 +59,9 @@ export function SiteHeader() {
     const trimmed = query.trim();
 
     if (trimmed) {
-      router.push(`/utforsk-data?q=${encodeURIComponent(trimmed)}`);
+      router.push(`/om-tallene?q=${encodeURIComponent(trimmed)}`);
     } else {
-      router.push("/utforsk-data");
+      router.push("/om-tallene");
     }
   }
 

@@ -2,9 +2,10 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import * as planning from "../src/lib/planning";
-import type { LowIncomeNeed } from "../src/lib/planning";
+import type { IndicatorReading } from "../src/lib/planning";
 import { SAMFUNNSPULS_CATALOG } from "../src/lib/samfunnspuls/catalog";
 import { toCatalogDatabaseRows } from "../src/lib/samfunnspuls/database";
+import { listIndicators } from "../src/lib/samfunnspuls/indicators";
 
 type PlanningModule = typeof import("../src/lib/planning");
 
@@ -16,9 +17,11 @@ const {
   isRelevantActivity,
   normalizeName,
   parseLowIncomeJsonStat,
+  parsePopulationJsonStat,
 } = planningModule;
 
-const SSB_TABLE_URL = "https://data.ssb.no/api/v0/no/table/08764";
+const SSB_LOW_INCOME_URL = "https://data.ssb.no/api/v0/no/table/08764";
+const SSB_POPULATION_URL = "https://data.ssb.no/api/v0/no/table/06913";
 const ORGANIZATION_DATA_PATH = path.join(
   process.cwd(),
   "docs/data/api-getOrganizations-output-21apr26.json",
@@ -69,55 +72,107 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
+async function main() {
 const importedAt = new Date().toISOString();
 const organizationPayload = JSON.parse(await readFile(ORGANIZATION_DATA_PATH, "utf8"));
 const branches = organizationPayload.data.branches as SourceBranch[];
-const ssbMetadata = await fetchJson<SsbMetadata>(SSB_TABLE_URL);
-const latestYear = ssbMetadata.variables.find((variable) => variable.code === "Tid")?.values.at(-1);
 
-if (!latestYear) {
+const lowIncomeMetadata = await fetchJson<SsbMetadata>(SSB_LOW_INCOME_URL);
+const lowIncomeYear = lowIncomeMetadata.variables
+  .find((variable) => variable.code === "Tid")
+  ?.values.at(-1);
+
+if (!lowIncomeYear) {
   throw new Error("Could not find latest SSB year for table 08764");
 }
 
-const selectedRegions = selectRegionsForBranches(ssbMetadata, branches);
-const ssbDataset = await fetchJson<Record<string, unknown>>(SSB_TABLE_URL, {
+const populationMetadata = await fetchJson<SsbMetadata>(SSB_POPULATION_URL);
+const populationYear = populationMetadata.variables
+  .find((variable) => variable.code === "Tid")
+  ?.values.at(-1);
+
+if (!populationYear) {
+  throw new Error("Could not find latest SSB year for table 06913");
+}
+
+const selectedRegions = selectRegionsForBranches(lowIncomeMetadata, branches);
+const selectedCodes = selectedRegions.map((region) => region.code);
+
+const lowIncomeDataset = await fetchJson<Record<string, unknown>>(SSB_LOW_INCOME_URL, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     query: [
       {
         code: "Region",
-        selection: {
-          filter: "item",
-          values: selectedRegions.map((region) => region.code),
-        },
+        selection: { filter: "item", values: selectedCodes },
       },
       {
         code: "ContentsCode",
-        selection: {
-          filter: "item",
-          values: ["Personer", "EUskala60"],
-        },
+        selection: { filter: "item", values: ["Personer", "EUskala60"] },
       },
       {
         code: "Tid",
-        selection: {
-          filter: "item",
-          values: [latestYear],
-        },
+        selection: { filter: "item", values: [lowIncomeYear] },
       },
     ],
     response: { format: "JSON-stat2" },
   }),
 });
 
-const needRows = parseLowIncomeJsonStat(ssbDataset).map((need: LowIncomeNeed) => ({
-  region_code: need.regionCode,
-  municipality: need.municipality,
-  year: Number(need.year),
-  children_count: need.childrenCount,
-  low_income_percent: need.lowIncomePercent,
-  source_updated_at: need.sourceUpdatedAt,
+const populationRegions = selectRegionsForBranches(populationMetadata, branches).map(
+  (region) => region.code,
+);
+
+const populationDataset = await fetchJson<Record<string, unknown>>(SSB_POPULATION_URL, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    query: [
+      {
+        code: "Region",
+        selection: { filter: "item", values: populationRegions },
+      },
+      {
+        code: "ContentsCode",
+        selection: {
+          filter: "item",
+          values: ["Folkemengde", "Folketilvekst", "Nettoinnflytting"],
+        },
+      },
+      {
+        code: "Tid",
+        selection: { filter: "top", values: ["3"] },
+      },
+    ],
+    response: { format: "JSON-stat2" },
+  }),
+});
+
+const lowIncomeReadings = parseLowIncomeJsonStat(lowIncomeDataset);
+const populationReadings = parsePopulationJsonStat(populationDataset);
+const allReadings: IndicatorReading[] = [...lowIncomeReadings, ...populationReadings];
+
+const indicatorRows = listIndicators().map((indicator) => ({
+  indicator_id: indicator.id,
+  label: indicator.label,
+  short_label: indicator.shortLabel,
+  unit: indicator.unit,
+  source: indicator.source,
+  source_table: indicator.sourceTable,
+  source_url: indicator.sourceUrl,
+  description: indicator.description,
+  direction: indicator.direction,
+}));
+
+const indicatorValueRows = allReadings.map((reading) => ({
+  indicator_id: reading.indicatorId,
+  region_code: reading.regionCode,
+  municipality: reading.municipality,
+  county: reading.county,
+  period: reading.period,
+  value: reading.value,
+  source_updated_at: reading.sourceUpdatedAt,
   imported_at: importedAt,
 }));
 
@@ -151,17 +206,38 @@ const activityRows = uniqueBy(
     `${activity.branch_id}|${activity.activity_name}|${activity.local_activity_name}`,
 );
 
+const lowIncomeNeedRows = lowIncomeReadings.map((reading) => ({
+  region_code: reading.regionCode,
+  municipality: reading.municipality,
+  year: Number(reading.period),
+  children_count: null as number | null,
+  low_income_percent: reading.value,
+  source_updated_at: reading.sourceUpdatedAt,
+  imported_at: importedAt,
+}));
+
 await upsert("data_sources", [
   {
     id: "ssb-08764",
     label: "SSB tabell 08764: Barn under 18 år i lavinntekt",
-    url: SSB_TABLE_URL,
-    source_updated_at: ssbDataset.updated,
+    url: SSB_LOW_INCOME_URL,
+    source_updated_at: (lowIncomeDataset as { updated?: string }).updated ?? null,
     imported_at: importedAt,
     metadata: {
-      year: latestYear,
-      regionsImported: needRows.length,
-      note: ssbDataset.note ?? [],
+      year: lowIncomeYear,
+      regionsImported: lowIncomeReadings.length,
+    },
+  },
+  {
+    id: "ssb-06913",
+    label: "SSB tabell 06913: Befolkning og endringer",
+    url: SSB_POPULATION_URL,
+    source_updated_at: (populationDataset as { updated?: string }).updated ?? null,
+    imported_at: importedAt,
+    metadata: {
+      year: populationYear,
+      regionsImported: populationRegions.length,
+      indicators: ["Folkemengde", "Folketilvekst", "Nettoinnflytting"],
     },
   },
   {
@@ -176,10 +252,15 @@ await upsert("data_sources", [
     },
   },
 ]);
+
+await upsert("indicators", indicatorRows);
+await supabase.from("indicator_values").delete().neq("indicator_id", "");
+await insertChunks("indicator_values", indicatorValueRows);
+
 await upsert("branches", branchRows);
 await supabase.from("branch_activities").delete().neq("branch_id", "");
 await insertChunks("branch_activities", activityRows);
-await upsert("need_indicators", needRows);
+await upsert("need_indicators", lowIncomeNeedRows);
 await upsert(
   "statistic_catalog_entries",
   toCatalogDatabaseRows(SAMFUNNSPULS_CATALOG).map((row) => ({
@@ -192,16 +273,23 @@ console.log(
   JSON.stringify(
     {
       importedAt,
-      latestYear,
+      lowIncomeYear,
+      populationYear,
       branches: branchRows.length,
       activities: activityRows.length,
-      municipalitiesWithNeeds: needRows.length,
+      indicatorReadings: indicatorValueRows.length,
       catalogEntries: SAMFUNNSPULS_CATALOG.length,
     },
     null,
     2,
   ),
 );
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(url, options);
