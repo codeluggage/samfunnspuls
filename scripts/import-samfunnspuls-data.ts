@@ -20,6 +20,9 @@ const {
   parsePopulationJsonStat,
 } = planningModule;
 
+// TODO: Split these out into separate scripts so each source of data can be handled on its own and
+// live close to the related postgres migration, in a pattern that's easy to understand and follow
+// for new sources of data.
 const SSB_LOW_INCOME_URL = "https://data.ssb.no/api/v0/no/table/08764";
 const SSB_POPULATION_URL = "https://data.ssb.no/api/v0/no/table/06913";
 const ORGANIZATION_DATA_PATH = path.join(

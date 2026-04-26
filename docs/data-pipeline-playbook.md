@@ -15,7 +15,9 @@ From empty database to served data with one repeatable flow:
 
 - Vercel project created.
 - Supabase project created.
-- `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` available.
+- `NEXT_PUBLIC_SUPABASE_URL` available.
+- `SUPABASE_SERVICE_ROLE_KEY` available (service_role JWT from `supabase status` — used by the import script).
+- `SUPABASE_SECRET_KEY` set in Vercel env vars (the `sb_secret_...` key from the Supabase dashboard — used by the deployed app server).
 - Supabase CLI logged in.
 
 ## One-time setup per machine
@@ -25,13 +27,19 @@ npm install
 supabase login
 ```
 
-Create or update local env file used by scripts:
+Create the env file for the remote import script (`data:sync:prod` reads `.env`):
 
 ```bash
-cat > .env.local <<'EOF'
+cat > .env <<'EOF'
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=YOUR_SERVICE_ROLE_KEY
+SUPABASE_SERVICE_ROLE_KEY=YOUR_SERVICE_ROLE_JWT
 EOF
+```
+
+For local dev (`data:sync:local` reads `.env.local`), copy the example and fill in values from `supabase start`:
+
+```bash
+cp .env.example .env.local
 ```
 
 ## Empty deployment -> loaded data (copy/paste flow)
@@ -51,7 +59,7 @@ supabase db push
 Run importer against remote Supabase:
 
 ```bash
-npm run data:sync
+npm run data:sync:prod
 ```
 
 Expected output includes:
@@ -105,7 +113,7 @@ What must be true:
 - `areas` is greater than `0`
 - `sources` is at least `3`
 
-## Adding a new source (low-willpower checklist)
+## Adding a new source
 
 1. Define source metadata:
 - Add/update source row in `scripts/import-samfunnspuls-data.ts` (`data_sources` upsert).
@@ -130,7 +138,7 @@ What must be true:
 ```bash
 npm test
 npm run check:ai
-npm run data:sync
+npm run data:sync:prod
 curl -s http://localhost:3000/api/system/data-status | jq
 ```
 
@@ -146,4 +154,4 @@ curl -s http://localhost:3000/api/system/data-status | jq '.latestRun'
 ```
 
 3. Confirm `latestRun.status` and `latestRun.errorMessage`.
-4. Fix parser/query/schema issue and rerun `npm run data:sync`.
+4. Fix parser/query/schema issue and rerun `npm run data:sync:prod`.

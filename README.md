@@ -36,10 +36,10 @@ supabase start
 cp .env.example .env.local
 ```
 
-Set `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` from the `supabase start` output, then run:
+Set both `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_SECRET_KEY` in `.env.local` to the service_role key from the `supabase start` output (locally both use the same JWT value), then run:
 
 ```bash
-npm run data:sync
+npm run data:sync:local
 npm run build
 npm run start
 ```
