@@ -1,6 +1,6 @@
 ---
 name: "rk-brand-design"
-description: "Use when designing or restyling a Røde Kors surface — choosing visual treatment, hero layout, when to use red vs neutral, how much CrossCorner garnish, brand voice and copy tone, throwaway HTML mocks for ideation."
+description: "Use when designing or restyling Røde Kors web surfaces, choosing brand-fit layout, color restraint, hero treatment, CrossCorner use, or Bokmål UX copy."
 user-invocable: true
 ---
 
