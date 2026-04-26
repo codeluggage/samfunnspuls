@@ -10,6 +10,7 @@ The app combines one public humanitarian need indicator from SSB with supplied R
 - **Supplied Røde Kors data:** `docs/data/api-getOrganizations-output-21apr26.json`, originally produced from the Røde Kors Organizations API.
 - **Database:** local Supabase stores imported source metadata, branches, activities, and normalized need indicators.
 - **Backend:** `GET /api/planning/areas` joins the normalized tables and returns a planning-friendly shape.
+- **Pipeline observability:** `GET /api/system/data-status` exposes ingest runs, table row counts, source freshness, and readiness checks.
 - **Frontend:** the Next.js App Router page consumes only the API route and renders a Røde Kors design-system dashboard with loading, empty, error, source metadata, mobile layout, and accessible controls.
 - **Deployment:** Vercel and Supabase.
 
@@ -18,8 +19,9 @@ The app combines one public humanitarian need indicator from SSB with supplied R
 ```text
 SSB API table 08764
   + local Røde Kors organization JSON
-  -> scripts/import-samfunnspuls-data.mts
+  -> scripts/import-samfunnspuls-data.ts
   -> Supabase tables
+  -> /api/system/data-status
   -> /api/planning/areas
   -> dashboard page
 ```
@@ -54,6 +56,10 @@ npm run check:designsystem -- src/app
 npm run check:a11y -- src/app
 npm run check:agent-context
 ```
+
+Pipeline runbook (empty deployment -> loaded data):
+
+- `docs/data-pipeline-playbook.md`
 
 ## AI use
 

@@ -59,6 +59,29 @@ type SourceBranch = {
   }>;
 };
 
+type IngestionSourceSummary = {
+  sourceId: string;
+  sourceUpdatedAt: string | null;
+  importedAt: string;
+  rowsWritten: Record<string, number>;
+  metadata: Record<string, unknown>;
+};
+
+const PIPELINE_TABLES = [
+  "data_sources",
+  "branches",
+  "branch_activities",
+  "need_indicators",
+  "indicators",
+  "indicator_values",
+  "statistic_catalog_entries",
+] as const;
+
+const INGEST_TRIGGER = process.env.INGEST_TRIGGER ?? "manual";
+const INGEST_ACTOR = process.env.INGEST_ACTOR ?? null;
+const INGEST_SCRIPT_VERSION =
+  process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.GIT_COMMIT_SHA ?? "local";
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -73,217 +96,322 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
 });
 
 async function main() {
-const importedAt = new Date().toISOString();
-const organizationPayload = JSON.parse(await readFile(ORGANIZATION_DATA_PATH, "utf8"));
-const branches = organizationPayload.data.branches as SourceBranch[];
+  const runId = process.env.INGEST_RUN_ID ?? `run-${Date.now()}`;
+  const startedAt = new Date().toISOString();
+  const importedAt = startedAt;
 
-const lowIncomeMetadata = await fetchJson<SsbMetadata>(SSB_LOW_INCOME_URL);
-const lowIncomeYear = lowIncomeMetadata.variables
-  .find((variable) => variable.code === "Tid")
-  ?.values.at(-1);
+  await upsert("ingestion_runs", [
+    {
+      run_id: runId,
+      started_at: startedAt,
+      finished_at: null,
+      status: "running",
+      trigger: INGEST_TRIGGER,
+      actor: INGEST_ACTOR,
+      script_version: INGEST_SCRIPT_VERSION,
+      source_summaries: [],
+      table_row_counts: {},
+      error_message: null,
+    },
+  ]);
 
-if (!lowIncomeYear) {
-  throw new Error("Could not find latest SSB year for table 08764");
-}
+  try {
+    const organizationPayload = JSON.parse(
+      await readFile(ORGANIZATION_DATA_PATH, "utf8"),
+    );
+    const branches = organizationPayload.data.branches as SourceBranch[];
 
-const populationMetadata = await fetchJson<SsbMetadata>(SSB_POPULATION_URL);
-const populationYear = populationMetadata.variables
-  .find((variable) => variable.code === "Tid")
-  ?.values.at(-1);
+    const lowIncomeMetadata = await fetchJson<SsbMetadata>(SSB_LOW_INCOME_URL);
+    const lowIncomeYear = lowIncomeMetadata.variables
+      .find((variable) => variable.code === "Tid")
+      ?.values.at(-1);
 
-if (!populationYear) {
-  throw new Error("Could not find latest SSB year for table 06913");
-}
+    if (!lowIncomeYear) {
+      throw new Error("Could not find latest SSB year for table 08764");
+    }
 
-const selectedRegions = selectRegionsForBranches(lowIncomeMetadata, branches);
-const selectedCodes = selectedRegions.map((region) => region.code);
+    const populationMetadata = await fetchJson<SsbMetadata>(SSB_POPULATION_URL);
+    const populationYear = populationMetadata.variables
+      .find((variable) => variable.code === "Tid")
+      ?.values.at(-1);
 
-const lowIncomeDataset = await fetchJson<Record<string, unknown>>(SSB_LOW_INCOME_URL, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    query: [
+    if (!populationYear) {
+      throw new Error("Could not find latest SSB year for table 06913");
+    }
+
+    const selectedRegions = selectRegionsForBranches(lowIncomeMetadata, branches);
+    const selectedCodes = selectedRegions.map((region) => region.code);
+
+    const lowIncomeDataset = await fetchJson<Record<string, unknown>>(
+      SSB_LOW_INCOME_URL,
       {
-        code: "Region",
-        selection: { filter: "item", values: selectedCodes },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: [
+            {
+              code: "Region",
+              selection: { filter: "item", values: selectedCodes },
+            },
+            {
+              code: "ContentsCode",
+              selection: { filter: "item", values: ["Personer", "EUskala60"] },
+            },
+            {
+              code: "Tid",
+              selection: { filter: "item", values: [lowIncomeYear] },
+            },
+          ],
+          response: { format: "JSON-stat2" },
+        }),
       },
-      {
-        code: "ContentsCode",
-        selection: { filter: "item", values: ["Personer", "EUskala60"] },
-      },
-      {
-        code: "Tid",
-        selection: { filter: "item", values: [lowIncomeYear] },
-      },
-    ],
-    response: { format: "JSON-stat2" },
-  }),
-});
+    );
 
-const populationRegions = selectRegionsForBranches(populationMetadata, branches).map(
-  (region) => region.code,
-);
+    const populationRegions = selectRegionsForBranches(populationMetadata, branches)
+      .map((region) => region.code);
 
-const populationDataset = await fetchJson<Record<string, unknown>>(SSB_POPULATION_URL, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    query: [
+    const populationDataset = await fetchJson<Record<string, unknown>>(
+      SSB_POPULATION_URL,
       {
-        code: "Region",
-        selection: { filter: "item", values: populationRegions },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: [
+            {
+              code: "Region",
+              selection: { filter: "item", values: populationRegions },
+            },
+            {
+              code: "ContentsCode",
+              selection: {
+                filter: "item",
+                values: ["Folkemengde", "Folketilvekst", "Nettoinnflytting"],
+              },
+            },
+            {
+              code: "Tid",
+              selection: { filter: "top", values: ["3"] },
+            },
+          ],
+          response: { format: "JSON-stat2" },
+        }),
       },
+    );
+
+    const lowIncomeReadings = parseLowIncomeJsonStat(lowIncomeDataset);
+    const populationReadings = parsePopulationJsonStat(populationDataset);
+    const allReadings: IndicatorReading[] = [
+      ...lowIncomeReadings,
+      ...populationReadings,
+    ];
+
+    const indicatorRows = listIndicators().map((indicator) => ({
+      indicator_id: indicator.id,
+      label: indicator.label,
+      short_label: indicator.shortLabel,
+      unit: indicator.unit,
+      source: indicator.source,
+      source_table: indicator.sourceTable,
+      source_url: indicator.sourceUrl,
+      description: indicator.description,
+      direction: indicator.direction,
+    }));
+
+    const indicatorValueRows = allReadings.map((reading) => ({
+      indicator_id: reading.indicatorId,
+      region_code: reading.regionCode,
+      municipality: reading.municipality,
+      county: reading.county,
+      period: reading.period,
+      value: reading.value,
+      source_updated_at: reading.sourceUpdatedAt,
+      imported_at: importedAt,
+    }));
+
+    const branchRows = uniqueBy(
+      branches.map((branch) => ({
+        branch_id: branch.branchId,
+        branch_name: branch.branchName,
+        county: branch.branchLocation?.county ?? null,
+        municipality: branch.branchLocation?.municipality ?? null,
+        is_active: Boolean(
+          branch.branchStatus?.isActive && !branch.branchStatus?.isTerminated,
+        ),
+        email: branch.communicationChannels?.email ?? null,
+        phone: branch.communicationChannels?.phone ?? null,
+        web: branch.communicationChannels?.web ?? null,
+        source_updated_at: organizationPayload.metadata.timestamp,
+        imported_at: importedAt,
+      })),
+      (branch) => branch.branch_id,
+    );
+
+    const activityRows = uniqueBy(
+      branches.flatMap((branch) =>
+        (branch.branchActivities ?? []).map((activity) => ({
+          branch_id: branch.branchId,
+          activity_name: activity.globalActivityName,
+          local_activity_name:
+            activity.localActivityName ?? activity.globalActivityName,
+          is_relevant: isRelevantActivity(activity.globalActivityName),
+          imported_at: importedAt,
+        })),
+      ),
+      (activity) =>
+        `${activity.branch_id}|${activity.activity_name}|${activity.local_activity_name}`,
+    );
+
+    const lowIncomeNeedRows = lowIncomeReadings.map((reading) => ({
+      region_code: reading.regionCode,
+      municipality: reading.municipality,
+      year: Number(reading.period),
+      children_count: null as number | null,
+      low_income_percent: reading.value,
+      source_updated_at: reading.sourceUpdatedAt,
+      imported_at: importedAt,
+    }));
+
+    await upsert("data_sources", [
       {
-        code: "ContentsCode",
-        selection: {
-          filter: "item",
-          values: ["Folkemengde", "Folketilvekst", "Nettoinnflytting"],
+        id: "ssb-08764",
+        label: "SSB tabell 08764: Barn under 18 år i lavinntekt",
+        url: SSB_LOW_INCOME_URL,
+        source_updated_at: (lowIncomeDataset as { updated?: string }).updated ?? null,
+        imported_at: importedAt,
+        metadata: {
+          year: lowIncomeYear,
+          regionsImported: lowIncomeReadings.length,
         },
       },
       {
-        code: "Tid",
-        selection: { filter: "top", values: ["3"] },
+        id: "ssb-06913",
+        label: "SSB tabell 06913: Befolkning og endringer",
+        url: SSB_POPULATION_URL,
+        source_updated_at: (populationDataset as { updated?: string }).updated ?? null,
+        imported_at: importedAt,
+        metadata: {
+          year: populationYear,
+          regionsImported: populationRegions.length,
+          indicators: ["Folkemengde", "Folketilvekst", "Nettoinnflytting"],
+        },
       },
-    ],
-    response: { format: "JSON-stat2" },
-  }),
-});
+      {
+        id: "red-cross-organizations",
+        label: "Røde Kors organisasjoner og aktiviteter",
+        url: "https://developer.redcross.no/api-details#api=organizations&operation=getOrganizations",
+        source_updated_at: organizationPayload.metadata.timestamp,
+        imported_at: importedAt,
+        metadata: {
+          totalCount: organizationPayload.metadata.totalCount,
+          localFile: "docs/data/api-getOrganizations-output-21apr26.json",
+        },
+      },
+    ]);
 
-const lowIncomeReadings = parseLowIncomeJsonStat(lowIncomeDataset);
-const populationReadings = parsePopulationJsonStat(populationDataset);
-const allReadings: IndicatorReading[] = [...lowIncomeReadings, ...populationReadings];
+    await upsert("indicators", indicatorRows);
+    await supabase.from("indicator_values").delete().neq("indicator_id", "");
+    await insertChunks("indicator_values", indicatorValueRows);
 
-const indicatorRows = listIndicators().map((indicator) => ({
-  indicator_id: indicator.id,
-  label: indicator.label,
-  short_label: indicator.shortLabel,
-  unit: indicator.unit,
-  source: indicator.source,
-  source_table: indicator.sourceTable,
-  source_url: indicator.sourceUrl,
-  description: indicator.description,
-  direction: indicator.direction,
-}));
+    await upsert("branches", branchRows);
+    await supabase.from("branch_activities").delete().neq("branch_id", "");
+    await insertChunks("branch_activities", activityRows);
+    await upsert("need_indicators", lowIncomeNeedRows);
+    await upsert(
+      "statistic_catalog_entries",
+      toCatalogDatabaseRows(SAMFUNNSPULS_CATALOG).map((row) => ({
+        ...row,
+        imported_at: importedAt,
+      })),
+    );
 
-const indicatorValueRows = allReadings.map((reading) => ({
-  indicator_id: reading.indicatorId,
-  region_code: reading.regionCode,
-  municipality: reading.municipality,
-  county: reading.county,
-  period: reading.period,
-  value: reading.value,
-  source_updated_at: reading.sourceUpdatedAt,
-  imported_at: importedAt,
-}));
+    const sourceSummaries: IngestionSourceSummary[] = [
+      {
+        sourceId: "ssb-08764",
+        sourceUpdatedAt: (lowIncomeDataset as { updated?: string }).updated ?? null,
+        importedAt,
+        rowsWritten: {
+          need_indicators: lowIncomeNeedRows.length,
+          indicator_values: lowIncomeReadings.length,
+        },
+        metadata: {
+          year: lowIncomeYear,
+          regionsImported: selectedCodes.length,
+        },
+      },
+      {
+        sourceId: "ssb-06913",
+        sourceUpdatedAt: (populationDataset as { updated?: string }).updated ?? null,
+        importedAt,
+        rowsWritten: {
+          indicator_values: populationReadings.length,
+        },
+        metadata: {
+          latestYear: populationYear,
+          regionsImported: populationRegions.length,
+          indicators: ["Folkemengde", "Folketilvekst", "Nettoinnflytting"],
+        },
+      },
+      {
+        sourceId: "red-cross-organizations",
+        sourceUpdatedAt: organizationPayload.metadata.timestamp,
+        importedAt,
+        rowsWritten: {
+          branches: branchRows.length,
+          branch_activities: activityRows.length,
+        },
+        metadata: {
+          totalCount: organizationPayload.metadata.totalCount,
+          localFile: "docs/data/api-getOrganizations-output-21apr26.json",
+        },
+      },
+    ];
 
-const branchRows = uniqueBy(
-  branches.map((branch) => ({
-    branch_id: branch.branchId,
-    branch_name: branch.branchName,
-    county: branch.branchLocation?.county ?? null,
-    municipality: branch.branchLocation?.municipality ?? null,
-    is_active: Boolean(branch.branchStatus?.isActive && !branch.branchStatus?.isTerminated),
-    email: branch.communicationChannels?.email ?? null,
-    phone: branch.communicationChannels?.phone ?? null,
-    web: branch.communicationChannels?.web ?? null,
-    source_updated_at: organizationPayload.metadata.timestamp,
-    imported_at: importedAt,
-  })),
-  (branch) => branch.branch_id,
-);
+    const tableRowCounts = await countPipelineTables();
+    const finishedAt = new Date().toISOString();
 
-const activityRows = uniqueBy(
-  branches.flatMap((branch) =>
-    (branch.branchActivities ?? []).map((activity) => ({
-      branch_id: branch.branchId,
-      activity_name: activity.globalActivityName,
-      local_activity_name: activity.localActivityName ?? activity.globalActivityName,
-      is_relevant: isRelevantActivity(activity.globalActivityName),
-      imported_at: importedAt,
-    })),
-  ),
-  (activity) =>
-    `${activity.branch_id}|${activity.activity_name}|${activity.local_activity_name}`,
-);
+    await upsert("ingestion_runs", [
+      {
+        run_id: runId,
+        started_at: startedAt,
+        finished_at: finishedAt,
+        status: "success",
+        trigger: INGEST_TRIGGER,
+        actor: INGEST_ACTOR,
+        script_version: INGEST_SCRIPT_VERSION,
+        source_summaries: sourceSummaries,
+        table_row_counts: tableRowCounts,
+        error_message: null,
+      },
+    ]);
 
-const lowIncomeNeedRows = lowIncomeReadings.map((reading) => ({
-  region_code: reading.regionCode,
-  municipality: reading.municipality,
-  year: Number(reading.period),
-  children_count: null as number | null,
-  low_income_percent: reading.value,
-  source_updated_at: reading.sourceUpdatedAt,
-  imported_at: importedAt,
-}));
-
-await upsert("data_sources", [
-  {
-    id: "ssb-08764",
-    label: "SSB tabell 08764: Barn under 18 år i lavinntekt",
-    url: SSB_LOW_INCOME_URL,
-    source_updated_at: (lowIncomeDataset as { updated?: string }).updated ?? null,
-    imported_at: importedAt,
-    metadata: {
-      year: lowIncomeYear,
-      regionsImported: lowIncomeReadings.length,
-    },
-  },
-  {
-    id: "ssb-06913",
-    label: "SSB tabell 06913: Befolkning og endringer",
-    url: SSB_POPULATION_URL,
-    source_updated_at: (populationDataset as { updated?: string }).updated ?? null,
-    imported_at: importedAt,
-    metadata: {
-      year: populationYear,
-      regionsImported: populationRegions.length,
-      indicators: ["Folkemengde", "Folketilvekst", "Nettoinnflytting"],
-    },
-  },
-  {
-    id: "red-cross-organizations",
-    label: "Røde Kors organisasjoner og aktiviteter",
-    url: "https://developer.redcross.no/api-details#api=organizations&operation=getOrganizations",
-    source_updated_at: organizationPayload.metadata.timestamp,
-    imported_at: importedAt,
-    metadata: {
-      totalCount: organizationPayload.metadata.totalCount,
-      localFile: "docs/data/api-getOrganizations-output-21apr26.json",
-    },
-  },
-]);
-
-await upsert("indicators", indicatorRows);
-await supabase.from("indicator_values").delete().neq("indicator_id", "");
-await insertChunks("indicator_values", indicatorValueRows);
-
-await upsert("branches", branchRows);
-await supabase.from("branch_activities").delete().neq("branch_id", "");
-await insertChunks("branch_activities", activityRows);
-await upsert("need_indicators", lowIncomeNeedRows);
-await upsert(
-  "statistic_catalog_entries",
-  toCatalogDatabaseRows(SAMFUNNSPULS_CATALOG).map((row) => ({
-    ...row,
-    imported_at: importedAt,
-  })),
-);
-
-console.log(
-  JSON.stringify(
-    {
-      importedAt,
-      lowIncomeYear,
-      populationYear,
-      branches: branchRows.length,
-      activities: activityRows.length,
-      indicatorReadings: indicatorValueRows.length,
-      catalogEntries: SAMFUNNSPULS_CATALOG.length,
-    },
-    null,
-    2,
-  ),
-);
+    console.log(
+      JSON.stringify(
+        {
+          runId,
+          importedAt,
+          finishedAt,
+          lowIncomeYear,
+          populationYear,
+          branches: branchRows.length,
+          activities: activityRows.length,
+          indicatorReadings: indicatorValueRows.length,
+          catalogEntries: SAMFUNNSPULS_CATALOG.length,
+          tableRowCounts,
+        },
+        null,
+        2,
+      ),
+    );
+  } catch (error) {
+    const finishedAt = new Date().toISOString();
+    await safeRecordIngestionFailure({
+      runId,
+      startedAt,
+      finishedAt,
+      errorMessage: toErrorMessage(error),
+    });
+    throw error;
+  }
 }
 
 main().catch((error) => {
@@ -310,6 +438,59 @@ async function insertChunks(table: string, rows: Array<Record<string, unknown>>)
   for (const chunk of chunks(rows, 500)) {
     const { error } = await supabase.from(table).insert(chunk);
     if (error) throw error;
+  }
+}
+
+async function countRows(table: string): Promise<number> {
+  const { count, error } = await supabase
+    .from(table)
+    .select("*", { count: "exact", head: true });
+  if (error) throw error;
+  return count ?? 0;
+}
+
+async function countPipelineTables(): Promise<Record<string, number>> {
+  const tableRowCounts: Record<string, number> = {};
+  for (const table of PIPELINE_TABLES) {
+    tableRowCounts[table] = await countRows(table);
+  }
+  return tableRowCounts;
+}
+
+function toErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
+  return "Unknown ingestion error";
+}
+
+async function safeRecordIngestionFailure({
+  runId,
+  startedAt,
+  finishedAt,
+  errorMessage,
+}: {
+  runId: string;
+  startedAt: string;
+  finishedAt: string;
+  errorMessage: string;
+}) {
+  try {
+    await upsert("ingestion_runs", [
+      {
+        run_id: runId,
+        started_at: startedAt,
+        finished_at: finishedAt,
+        status: "failed",
+        trigger: INGEST_TRIGGER,
+        actor: INGEST_ACTOR,
+        script_version: INGEST_SCRIPT_VERSION,
+        source_summaries: [],
+        table_row_counts: {},
+        error_message: errorMessage,
+      },
+    ]);
+  } catch (recordError) {
+    console.error("Failed to record ingestion failure:", recordError);
   }
 }
 
