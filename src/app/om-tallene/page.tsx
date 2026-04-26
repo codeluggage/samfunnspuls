@@ -12,6 +12,7 @@ import {
   Tag,
   Textfield,
 } from "rk-designsystem";
+import { CheckmarkCircleFillIcon, ClockDashedIcon, DatabaseFillIcon } from "@navikt/aksel-icons";
 import { type ChangeEvent, useMemo, useState } from "react";
 import {
   SAMFUNNSPULS_CATALOG,
@@ -198,7 +199,38 @@ export default function UtforskDataPage() {
                 <Heading level={2} data-size="md">
                   Ingen treff
                 </Heading>
-                <Paragraph>Prøv et bredere søk, fjern et filter, eller søk på en kilde som SSB, NAV, Udir eller IMDi.</Paragraph>
+                <Paragraph>Prøv et bredere søk eller fjern filtre. Du kan også starte med et av disse:</Paragraph>
+                <div className={styles.emptyExamples}>
+                  {["lavinntekt", "NAV arbeidsledige", "sykehjem", "tilflytting", "08764"].map((term) => (
+                    <Button
+                      key={term}
+                      variant="secondary"
+                      data-size="sm"
+                      onClick={() => {
+                        setQuery(term);
+                        setCategory("all");
+                        setSource("all");
+                        setValueType("all");
+                        setStatus("all");
+                      }}
+                    >
+                      {term}
+                    </Button>
+                  ))}
+                  <Button
+                    variant="tertiary"
+                    data-size="sm"
+                    onClick={() => {
+                      setQuery("");
+                      setCategory("all");
+                      setSource("all");
+                      setValueType("all");
+                      setStatus("all");
+                    }}
+                  >
+                    Nullstill alt
+                  </Button>
+                </div>
               </div>
             </CardBlock>
           </Card>
@@ -252,7 +284,7 @@ function ResultCard({
           <article className={styles.resultCard}>
             <div className={styles.resultTitle}>
               <div className={styles.tagRow}>
-                <Tag data-color={statusColor(entry.status)}>{statusLabel(entry.status)}</Tag>
+                <StatusTag status={entry.status} />
                 {isSelected ? <Tag data-color="primary-color-red">Valgt</Tag> : null}
               </div>
               <Heading level={3} data-size="sm">
@@ -269,14 +301,11 @@ function ResultCard({
                 </Tag>
               ))}
             </div>
-            <Button
-              variant={isSelected ? "primary" : "secondary"}
-              data-size="sm"
-              onClick={onSelect}
-              aria-pressed={isSelected}
-            >
-              {isSelected ? "Detaljer vises" : "Se detaljer"}
-            </Button>
+            {!isSelected && (
+              <Button variant="secondary" data-size="sm" onClick={onSelect}>
+                Se detaljer
+              </Button>
+            )}
           </article>
         </CardBlock>
       </Card>
@@ -291,7 +320,7 @@ function DetailPanel({ entry, onRelatedSelect }: { entry: SamfunnspulsCatalogEnt
         <CardBlock>
           <div className={styles.detailStack}>
             <div className={styles.resultTitle}>
-              <Tag data-color={statusColor(entry.status)}>{statusLabel(entry.status)}</Tag>
+              <StatusTag status={entry.status} />
               <Heading level={2} data-size="lg">
                 {entry.title}
               </Heading>
@@ -440,10 +469,34 @@ function OptionalMeta({ label, value }: { label: string; value: string | undefin
   );
 }
 
+function StatusTag({ status }: { status: CatalogStatus }) {
+  if (status === "integrated") {
+    return (
+      <Tag data-color="success">
+        <CheckmarkCircleFillIcon aria-hidden fontSize="0.875rem" />
+        <span className={styles.srOnly}>Klar i løsningen</span>
+      </Tag>
+    );
+  }
+  if (status === "api-known") {
+    return (
+      <Tag data-color="info">
+        <DatabaseFillIcon aria-hidden fontSize="0.875rem" />
+        <span className={styles.srOnly}>Datakilde funnet</span>
+      </Tag>
+    );
+  }
+  return (
+    <Tag data-color="neutral">
+      <ClockDashedIcon aria-hidden fontSize="0.875rem" />
+      <span className={styles.srOnly}>Ikke tilgjengelig ennå</span>
+    </Tag>
+  );
+}
+
 function sourceDetails(entry: SamfunnspulsCatalogEntry) {
   const parts = [
     ...(entry.ssbTables?.map((table) => `SSB ${table.id}`) ?? []),
-    entry.powerBiReportId ? "Power BI-rapport funnet" : null,
     ...(entry.otherApiHints ?? []),
   ].filter(Boolean);
 
@@ -456,11 +509,6 @@ function statusLabel(statusValue: CatalogStatus) {
   return "Ingen data tilgjengelig ennå";
 }
 
-function statusColor(statusValue: CatalogStatus) {
-  if (statusValue === "integrated") return "success";
-  if (statusValue === "api-known") return "info";
-  return "neutral";
-}
 
 function valueTypeLabel(value: ValueType) {
   const labels: Record<ValueType, string> = {
