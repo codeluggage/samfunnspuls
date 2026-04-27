@@ -1,18 +1,17 @@
 # Samfunnspuls Case
 
-Initial Samfunnspuls case app for local activity planning in Røde Kors.
+A case app that helps Røde Kors volunteers see what their municipality needs and what local activities already exist.
 
-The app combines one public humanitarian need indicator from SSB with supplied Røde Kors branch/activity data. The first vertical slice focuses on children and youth: municipalities are ranked by the share of children under 18 living in low-income households, then matched with local activities such as Barnas Røde Kors, Leksehjelp, Ferie for alle, Møteplasser, Norsktrening, and Flyktningguide.
+It pulls public numbers from SSB (children in low-income households, population change, net migration) and pairs them with Røde Kors branch and activity data. You pick a municipality, see the key figures, and get an overview of local Røde Kors activities like Barnas Røde Kors, Leksehjelp, Ferie for alle, Møteplasser, Norsktrening, and Flyktningguide.
 
-## Case approach
+## How it works
 
-- **Open data API:** SSB table `08764`, fetched from `https://data.ssb.no/api/v0/no/table/08764`.
-- **Supplied Røde Kors data:** `docs/data/api-getOrganizations-output-21apr26.json`, originally produced from the Røde Kors Organizations API.
-- **Database:** local Supabase stores imported source metadata, branches, activities, and normalized need indicators.
-- **Backend:** `GET /api/planning/areas` joins the normalized tables and returns a planning-friendly shape.
-- **Pipeline observability:** `GET /api/system/data-status` exposes ingest runs, table row counts, source freshness, and readiness checks.
-- **Frontend:** the Next.js App Router page consumes only the API route and renders a Røde Kors design-system dashboard with loading, empty, error, source metadata, mobile layout, and accessible controls.
-- **Deployment:** Vercel deployed to https://samfunnspuls-v2.vercel.app and Supabase project https://ypcjawytwpjvzmvhuzjy.supabase.co
+- **SSB data:** table `08764` from `https://data.ssb.no/api/v0/no/table/08764`.
+- **Røde Kors data:** `docs/data/api-getOrganizations-output-21apr26.json`, from the Røde Kors Organizations API.
+- **Database:** Supabase stores branches, activities, and indicators of a humanitarian need (_Note: these are assumptions based on the trends in the data and may not be accurate_).
+- **API:** `GET /api/planning/areas` returns municipality profiles. `GET /api/system/data-status` shows what data is loaded and how fresh it is.
+- **Frontend:** Next.js App Router page with the Røde Kors design system.
+- **Deployed at:** https://samfunnspuls-v2.vercel.app (Supabase: https://ypcjawytwpjvzmvhuzjy.supabase.co)
 
 ## Data flow
 
@@ -26,7 +25,7 @@ SSB API table 08764
   -> dashboard page
 ```
 
-The importer deduplicates duplicate branch/activity keys from the source JSON before upserting. In the `api-getOrganizations-output-21apr26.json` local import it stores 391 unique branches, 2,375 activities, and 260 municipality need rows for 2024.
+The importer removes duplicates before writing. As of 2026-04-21 that JSON stores 391 branches, 2,375 activities, and 260 municipality rows for 2024.
 
 ## Setup
 
@@ -36,15 +35,15 @@ supabase start
 cp .env.example .env.local
 ```
 
-Set both `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_SECRET_KEY` in `.env.local` to the service_role key from the `supabase start` output (locally both use the same JWT value), then run:
+Set both `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_SECRET_KEY` in `.env.local` to the service_role key from `supabase start` (locally both use the same value), then:
 
 ```bash
-npm run data:sync:local
-npm run build
-npm run start
+supabase db reset # Only once each time you have a migration change
+npm run data:sync:local # Each time you want to ingest data locally. See  docs/data-pipeline-playbook.md if you want to update the data on the hosted supabase for https://samfunnspuls-v2.vercel.app/
+npm run build && npm run start # alternatively `npm run dev`
 ```
 
-Open http://localhost:3000 (or what your devcontainer has configured - typically exposed as port 3000)
+Open http://localhost:3000 (or whichever port your devcontainer exposes).
 
 Useful checks:
 
@@ -55,25 +54,19 @@ npm run lint
 npm run check:designsystem -- src/app
 npm run check:a11y -- src/app
 npm run check:agent-context
+
+# or do it bundled up in one step (which AI agents often need) with `npm run check:ai`
 ```
 
-Pipeline runbook (empty deployment -> loaded data):
+Data pipeline runbook: `docs/data-pipeline-playbook.md`
 
-- `docs/data-pipeline-playbook.md`
+## Template baseline
 
-## AI use
+Built on the Next.js starter template with the [Røde Kors Design System](https://norwegianredcross.github.io/DesignSystem/storybook/).
 
-AI was used to compress discovery, inspect the brief and local starter context, draft the implementation path, generate code, and run verification loops. Product scope, data choice, accessibility expectations, and final tradeoffs were kept explicit in the implementation and verification process.
-
-## Original template context
-
-Case app workspace derived from the Next.js starter template and pre-configured with the [Røde Kors Design System](https://norwegianredcross.github.io/DesignSystem/storybook/).
-
-- **Next.js 16** (App Router, TypeScript, webpack)
-- **React Compiler** enabled
-- **rk-designsystem** — Røde Kors component library
-- **Design tokens** — Røde Kors theme (colors, spacing, typography)
-- **Source Sans 3** font via `next/font`
-- **Devcontainer** — open in VS Code and start coding immediately
-- **AI_DESIGN_SYSTEM_GUIDE.md** — reference guide for AI-assisted development
-- **Repo-scoped skills and rules** (added recently) — shared agent context with guarded propagation to Claude and Cursor
+- Next.js 16 (App Router, TypeScript, webpack)
+- React Compiler
+- `rk-designsystem` component library and design tokens
+- Source Sans 3 via `next/font`
+- Devcontainer for VS Code
+- `AI_DESIGN_SYSTEM_GUIDE.md` for AI-assisted development
