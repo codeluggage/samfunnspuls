@@ -139,7 +139,7 @@ export default function HomePage() {
             aria-hidden
           />
           <div className={styles.heroInner}>
-            <Tag data-color="primary-color-red">Forstå hva folk i kommunen trenger, og hva vi kan gjøre</Tag>
+            <p className={styles.heroKicker}>Forstå hva folk i kommunen trenger, og hva vi kan gjøre</p>
             <Heading level={1} data-size="xl">
               Hva trenger lokalsamfunnet?
             </Heading>

@@ -30,8 +30,16 @@
 .heroInner {
   max-width: 60rem;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--ds-size-4);
-  justify-items: start;
+}
+
+.heroKicker {
+  margin: 0;
+  font-size: var(--ds-font-size-2);
+  line-height: var(--ds-line-height-sm);
+  color: var(--ds-color-primary-color-red-text-default);
+  font-weight: 600;
 }
 
 .picker {
